@@ -11,15 +11,16 @@ fullnameOverride: ""
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext:
-  fsGroup: 2000
 
 securityContext:
-  seccompProfile:
-    type: RuntimeDefault
-  readOnlyRootFilesystem: true
-  runAsNonRoot: true
-  runAsUser: 1000
+  capabilities:
+    add:
+    - CHOWN
+    - NET_BIND_SERVICE
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_NICE
+    - SYS_TIME
 
 service:
   type: LoadBalancer
@@ -47,20 +48,32 @@ env:
 
 resources:
   limits:
-    cpu: 500m
-    memory: 1Gi
+    cpu: 2000m
+    memory: 2Gi
   requests:
-    cpu: 250m
-    memory: 512Mi
+    cpu: 2000m
+    memory: 2Gi
 
 livenessProbe:
-  httpGet:
-    path: /
-    port: 80
+  exec:
+    command:
+      - nslookup
+      - localhost
+      - 127.0.0.1
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
 readinessProbe:
-  httpGet:
-    path: /
-    port: 80
+  exec:
+    command:
+      - nslookup
+      - localhost
+      - 127.0.0.1
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
 
 autoscaling:
   enabled: false
