@@ -1,0 +1,3 @@
+# Global values that can be accessed by all subcharts
+global:
+  storageClassName: longhorn

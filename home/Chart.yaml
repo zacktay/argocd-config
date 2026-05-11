@@ -1,0 +1,11 @@
+apiVersion: v2
+name: home
+description: An umbrella chart for my application stack
+type: application
+version: 0.1.1
+appVersion: "1.0.0"
+
+dependencies:
+- name: uptime-kuma
+  version: "0.1.0"
+  repository: "file://./charts/uptime-kuma"

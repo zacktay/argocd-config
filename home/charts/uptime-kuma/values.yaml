@@ -1,0 +1,60 @@
+replicaCount: 1
+
+image:
+  repository: louislam/uptime-kuma
+  tag: "2"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  seccompProfile:
+    type: RuntimeDefault
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 3001
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.6.30
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 700m
+    memory: 1Gi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 3001
+readinessProbe:
+  httpGet:
+    path: /
+    port: 3001
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+persistence:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  size: 2Gi
