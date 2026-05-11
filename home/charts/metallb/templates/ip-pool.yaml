@@ -1,0 +1,10 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: production
+  namespace: metallb-system
+spec:
+  addresses:
+  {{- toYaml .Values.productionpools | nindent 4 }}
+  autoAssign: true
+
