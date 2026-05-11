@@ -3,4 +3,4 @@ name: uptime-kuma
 description: A Helm chart for Uptime Kuma
 type: application
 version: 0.1.1
-appVersion: "1"
+appVersion: "2"

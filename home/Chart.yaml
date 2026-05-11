@@ -9,3 +9,6 @@ dependencies:
 - name: uptime-kuma
   version: "0.1.0"
   repository: "file://./charts/uptime-kuma"
+- name: pihole
+  version: "0.1.0"
+  repository: "file://./charts/pihole"
