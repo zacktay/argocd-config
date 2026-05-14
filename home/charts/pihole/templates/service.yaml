@@ -14,7 +14,9 @@ spec:
     {{- range $.Values.service.ports }}
     - port: {{ .port }}
       protocol: {{ .protocol }}
+      targetPort : {{ .name }}
       name: {{ .name }}
     {{- end }}
+  externalTrafficPolicy: Local
   selector:
     {{- include "pihole.selectorLabels" . | nindent 4 }}

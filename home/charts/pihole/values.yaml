@@ -35,7 +35,7 @@ service:
       name: http
       protocol: TCP
   annotations:
-    metallb.universe.tf/loadBalancerIPs: 192.168.6.53
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.53
 
 env:
   - name: TZ
