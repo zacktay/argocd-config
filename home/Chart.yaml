@@ -12,3 +12,6 @@ dependencies:
 - name: pihole
   version: "0.1.0"
   repository: "file://./charts/pihole"
+- name: adguard
+  version: "0.1.0"
+  repository: "file://./charts/adguard"

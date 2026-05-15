@@ -1,5 +1,7 @@
+replicaCount: 1
+
 image:
-  repository: pihole/pihole
+  repository: adguard/adguardhome
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -9,6 +11,8 @@ fullnameOverride: ""
 podAnnotations: {}
 podLabels: {}
 
+podSecurityContext:
+  fsGroup: 2000
 
 securityContext:
   capabilities:
@@ -24,16 +28,23 @@ service:
   type: LoadBalancer
   ports:
     - port: 53
+      targetPort: dns-udp
       name: dns-udp
       protocol: UDP
     - port: 53
+      targetPort: dns-tcp
       name: dns-tcp
       protocol: TCP
     - port: 80
+      targetPort: http
       name: http
       protocol: TCP
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http-initial
   annotations:
-    metallb.universe.tf/loadBalancerIPs: 192.168.1.53
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.54
 
 ingress:
   enabled: true
@@ -42,54 +53,36 @@ ingress:
     cert-manager.io/issuer: "home-ca-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
   hosts:
-    - host: pihole.home.lan
+    - host: adguard.home.lan
       paths: 
         - path: /
           pathType: Prefix
           backend:
             servicePort: 80
 
-env:
-  - name: TZ
-    value: "America/Singapore"
-  - name: FTLCONF_webserver_api_password
-    valueFrom:
-      secretKeyRef:
-        name: pihole-secret
-        key: pw
-  - name: VIRTUAL_HOST
-    value: "pihole.home.lan"
-
 resources:
   limits:
     cpu: 2000m
     memory: 2Gi
   requests:
-    cpu: 1000m
+    cpu: 700m
     memory: 1Gi
 
 livenessProbe:
-  exec:
-    command:
-      - nslookup
-      - localhost
-      - 127.0.0.1
+  tcpSocket:
+    port: 53
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
 readinessProbe:
-  exec:
-    command:
-      - nslookup
-      - localhost
-      - 127.0.0.1
-  initialDelaySeconds: 30
+  httpGet:
+    path: /login
+    port: 80
+  initialDelaySeconds: 15
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
-
-replicaCount: 1
 
 persistence:
   enabled: true
