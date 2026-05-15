@@ -40,7 +40,8 @@ service:
 ingress:
   enabled: true
   ingressClassName: traefik
-  annotations: {}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: "web"
   hosts:
     - host: pihole.home.lan
       paths: 
