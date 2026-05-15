@@ -28,6 +28,18 @@ service:
   annotations:
     metallb.universe.tf/loadBalancerIPs: 192.168.1.30
 
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations: {}
+  hosts:
+    - host: uptime-kuma.home.lan
+      paths: 
+        - path: /
+          pathType: Prefix
+          backend:
+            servicePort: 80
+
 resources:
   limits:
     cpu: 2000m
