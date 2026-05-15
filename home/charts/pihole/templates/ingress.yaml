@@ -8,6 +8,10 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
+  tls:
+   - hosts:
+     - pihole.home.lan
+     secretName: tls-pihole-cert
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}

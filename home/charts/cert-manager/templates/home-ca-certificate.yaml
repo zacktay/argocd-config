@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: home-ca
+  namespace: home
+spec:
+  isCA: true
+  commonName: home-ca
+  secretName: root-ca-secret
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer

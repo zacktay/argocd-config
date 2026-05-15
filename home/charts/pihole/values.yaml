@@ -32,6 +32,7 @@ service:
     - port: 80
       name: http
       protocol: TCP
+  
   annotations:
     metallb.universe.tf/loadBalancerIPs: 192.168.1.53
 
@@ -39,7 +40,8 @@ ingress:
   enabled: true
   ingressClassName: traefik
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: "web"
+    cert-manager.io/issuer: "home-ca-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
   hosts:
     - host: pihole.home.lan
       paths: 
@@ -56,6 +58,8 @@ env:
       secretKeyRef:
         name: pihole-secret
         key: pw
+  - name: VIRTUAL_HOST
+    value: "pihole.home.lan"
 
 resources:
   limits:
