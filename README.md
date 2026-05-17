@@ -21,6 +21,7 @@ The repository is organized to be used with ArgoCD, with applications defined as
 
 - **`charts/`**: Contains custom Helm charts for applications deployed in the cluster. Each subdirectory is a self-contained chart.
   - `pihole/`: Manages the Pi-hole instance.
+  - `adguard/`: Manages the AdGuard instance.
   - `uptime-kuma/`: Manages the Uptime Kuma monitoring instance.
   - `metallb-config/`: Manages the MetalLB `IPAddressPool` and `L2Advertisement` Custom Resources.
   - `cert-manager/`: Manages the `Issuer` and `ClusterIssuer` for cert-manager to determine where and how it will request certificates.
@@ -37,6 +38,7 @@ The following applications are managed via Helm charts within this repository an
 - **AdGuard**: Secondary Network-wide ad-blocking and DNS. (to be switched to Primary in the future after testing DoH)
 - **Uptime Kuma**: A user-friendly monitoring tool.
 - **MetalLB Configuration**: Defines the IP address pools for `LoadBalancer` services.
+- **Cert-Manager**: Defines the `Issuer` and `ClusterIssuer` for the certificates to be used within the cluster
 - **Scrypted**: A video integration platform to connect my security cameras to HomeKit / HomeAssistant
 - **Postgres**: A relational database for upcoming web applications
 
