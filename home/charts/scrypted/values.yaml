@@ -16,7 +16,7 @@ podSecurityContext: {}
 securityContext: {}
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - port: 11080
       name: http
@@ -24,7 +24,8 @@ service:
     - port: 10443
       name: https
       protocol: TCP
-  annotations: {}
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.100
 
 env:
   - name: SCRYPTED_WEBHOOK_UPDATE_AUTHORIZATION
