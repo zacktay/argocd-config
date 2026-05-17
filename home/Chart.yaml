@@ -15,3 +15,8 @@ dependencies:
 - name: adguard
   version: "0.1.0"
   repository: "file://./charts/adguard"
+- name: scrypted
+  version: "0.1.0"
+  repository: "file://./charts/scrypted"
+- name: postgres
+  version: "0.1.0"

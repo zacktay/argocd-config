@@ -1,0 +1,11 @@
+replicaCount: 1
+
+annotations: {}
+
+image:
+  name: ghcr.io/cloudnative-pg/postgresql:18
+  pullPolicy: IfNotPresent
+
+storage:
+  storageClass: longhorn
+  size: 20Gi

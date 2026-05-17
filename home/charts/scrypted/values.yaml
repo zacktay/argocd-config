@@ -16,7 +16,7 @@ podSecurityContext: {}
 securityContext: {}
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 11080
       name: http
@@ -24,8 +24,7 @@ service:
     - port: 10443
       name: https
       protocol: TCP
-  annotations:
-    metallb.universe.tf/loadBalancerIPs: 192.168.1.100
+  annotations: {}
 
 env:
   - name: SCRYPTED_WEBHOOK_UPDATE_AUTHORIZATION
@@ -47,7 +46,13 @@ ingress:
           backend:
             servicePort: 11080
 
-resources: {}
+resources:
+  limits:
+    cpu: 4000m
+    memory: 6Gi
+  requests:
+    cpu: 2000m
+    memory: 3Gi
 
 livenessProbe: {}
 readinessProbe: {}
@@ -57,3 +62,6 @@ persistence:
   accessModes:
     - ReadWriteOnce
   size: 10Gi
+
+nodeSelector:
+  kubernetes.io/hostname: zack-node-01

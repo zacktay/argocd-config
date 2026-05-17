@@ -1,0 +1,13 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "postgres.fullname" . }}
+  annotations:
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  imageName: {{ .Values.image.name }}
+  instances: {{ .Values.replicaCount }}
+  storage:
+    size: {{ .Values.storage.size }}
