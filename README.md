@@ -23,7 +23,9 @@ The repository is organized to be used with ArgoCD, with applications defined as
   - `pihole/`: Manages the Pi-hole instance.
   - `uptime-kuma/`: Manages the Uptime Kuma monitoring instance.
   - `metallb-config/`: Manages the MetalLB `IPAddressPool` and `L2Advertisement` Custom Resources.
-  -  `cert-manager/`: Manages the `Issuer` and `ClusterIssuer` for cert-manager to determine where and how it will request certificates
+  - `cert-manager/`: Manages the `Issuer` and `ClusterIssuer` for cert-manager to determine where and how it will request certificates.
+  - `scrypted/`: Manages Scrypted, a video integration platform for security cameras.
+  - `postgres/`: Manages a Cloud-Native Postgres cluster for applications.
 
 ---
 
@@ -31,9 +33,12 @@ The repository is organized to be used with ArgoCD, with applications defined as
 
 The following applications are managed via Helm charts within this repository and deployed by ArgoCD:
 
-- **Pi-hole**: Network-wide ad-blocking and DNS.
+- **Pi-hole**: Primary Network-wide ad-blocking and DNS.
+- **AdGuard**: Secondary Network-wide ad-blocking and DNS. (to be switched to Primary in the future after testing DoH)
 - **Uptime Kuma**: A user-friendly monitoring tool.
 - **MetalLB Configuration**: Defines the IP address pools for `LoadBalancer` services.
+- **Scrypted**: A video integration platform to connect my security cameras to HomeKit / HomeAssistant
+- **Postgres**: A relational database for upcoming web applications
 
 ---
 
@@ -58,10 +63,11 @@ Installs the controller for issuing and renewing TLS certificates automatically 
 helm install cert-manager oci://quay.io/jetstack/charts/cert-manager --version v1.20.2 --namespace cert-manager --create-namespace --set crds.enabled=true
 ```
 
-### GitHub Actions Runner Controller (ARC)
+### Cloud Native Postgres
 
-Installs the controller for managing self-hosted GitHub Actions runners within the Kubernetes cluster.
+Installs the cloud native postgres operator onto the cluster
 
 ```bash
-helm install arc --namespace arc-systems --create-namespace oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/cloudnative-pg
 ```
