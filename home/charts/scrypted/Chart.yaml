@@ -1,0 +1,6 @@
+apiVersion: v2
+name: scrypted
+description: A Helm chart for Scrypted
+type: application
+version: 0.1.1
+appVersion: "latest"

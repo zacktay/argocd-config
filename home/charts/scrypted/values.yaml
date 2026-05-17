@@ -1,0 +1,58 @@
+replicaCount: 1
+
+image:
+  repository: koush/scrypted
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  ports:
+    - port: 11080
+      name: http
+      protocol: TCP
+    - port: 10443
+      name: https
+      protocol: TCP
+  annotations: {}
+
+env:
+  - name: SCRYPTED_WEBHOOK_UPDATE_AUTHORIZATION
+    value: "Bearer SET_THIS_TO_SOME_RANDOM_TEXT"
+  - name: SCRYPTED_WEBHOOK_UPDATE
+    value: http://localhost:8080/v1/update
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/issuer: "home-ca-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  hosts:
+    - host: scrypted.home.lan
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            servicePort: 11080
+
+resources: {}
+
+livenessProbe: {}
+readinessProbe: {}
+
+persistence:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
