@@ -7,7 +7,32 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
+  bootstrap:
+    initdb:
+      database: {{ .Values.bootstrap.database }}
+      owner: {{ .Values.bootstrap.owner }}
   imageName: {{ .Values.image.name }}
   instances: {{ .Values.replicaCount }}
   storage:
     size: {{ .Values.storage.size }}
+  {{- if .Values.postgresql }}
+  postgresql:
+    {{- toYaml .Values.postgresql | nindent 4 }}
+  {{- end }}
+  {{- if .Values.service }}
+  managed:
+    services:
+      disabledDefaultServices: ["ro", "r"]
+      additional:
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: "rw"
+              annotations:
+                {{- with .Values.service.annotations }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+            spec:
+              type: {{ .Values.service.type }}
+              externalTrafficPolicy: Local
+  {{- end }}
