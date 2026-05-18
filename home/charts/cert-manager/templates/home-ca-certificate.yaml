@@ -7,6 +7,10 @@ spec:
   isCA: true
   commonName: home-ca
   secretName: root-ca-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
   issuerRef:
     name: selfsigned-issuer
-    kind: Issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

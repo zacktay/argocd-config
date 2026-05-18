@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "pihole.fullname" . }}
+  name: {{ include "adguard.fullname" . }}
   annotations:
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -10,8 +10,8 @@ metadata:
 spec:
   tls:
    - hosts:
-     - pihole.home.lan
-     secretName: tls-pihole-cert
+     - adguard.home.lan
+     secretName: tls-adguard-cert
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
@@ -25,7 +25,7 @@ spec:
         pathType: {{ .pathType }}
         backend:
           service:
-            name: {{ include "pihole.fullname" $ }}
+            name: {{ include "adguard.fullname" $ }}
             port:
               number: {{ .backend.servicePort }}
       {{- end }}

@@ -2,4 +2,4 @@ apiVersion: v2
 name: metallb
 description: A Helm chart for MetalLB
 type: application
-version: 0.1.0
+version: 1.0.0

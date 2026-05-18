@@ -63,6 +63,7 @@ Installs the controller for issuing and renewing TLS certificates automatically 
 
 ```bash
 helm install cert-manager oci://quay.io/jetstack/charts/cert-manager --version v1.20.2 --namespace cert-manager --create-namespace --set crds.enabled=true
+helm upgrade trust-manager oci://quay.io/jetstack/charts/trust-manager --install --namespace cert-manager --wait
 ```
 
 ### Cloud Native Postgres

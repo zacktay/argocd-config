@@ -33,7 +33,7 @@ service:
       name: http
       protocol: TCP
   annotations:
-    metallb.universe.tf/loadBalancerIPs: 192.168.1.53
+    metallb.io/loadBalancerIPs: 192.168.1.53
 
 ingress:
   enabled: true

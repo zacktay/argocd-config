@@ -2,5 +2,5 @@ apiVersion: v2
 name: scrypted
 description: A Helm chart for Scrypted
 type: application
-version: 0.1.1
+version: 1.0.0
 appVersion: "latest"
