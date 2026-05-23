@@ -26,7 +26,7 @@ The repository is organized to be used with ArgoCD, with applications defined as
   - `metallb-config/`: Manages the MetalLB `IPAddressPool` and `L2Advertisement` Custom Resources.
   - `cert-manager/`: Manages the `Issuer` and `ClusterIssuer` for cert-manager to determine where and how it will request certificates.
   - `scrypted/`: Manages Scrypted, a video integration platform for security cameras.
-  - `postgres/`: Manages a Cloud-Native Postgres cluster for applications.
+  - `vault/`: Manages the Ingress for Hashicorp Vault
 
 ---
 
@@ -40,7 +40,7 @@ The following applications are managed via Helm charts within this repository an
 - **MetalLB Configuration**: Defines the IP address pools for `LoadBalancer` services.
 - **Cert-Manager**: Defines the `Issuer` and `ClusterIssuer` for the certificates to be used within the cluster
 - **Scrypted**: A video integration platform to connect my security cameras to HomeKit / HomeAssistant
-- **Postgres**: A relational database for upcoming web applications
+- **Vault**: Defines the `Ingress` for Hashicorp Vault
 
 ---
 
@@ -66,11 +66,38 @@ helm install cert-manager oci://quay.io/jetstack/charts/cert-manager --version v
 helm upgrade trust-manager oci://quay.io/jetstack/charts/trust-manager --install --namespace cert-manager --wait
 ```
 
-### Cloud Native Postgres
+### Hashicorp vault
 
-Installs the cloud native postgres operator onto the cluster
+Installs the vault
 
 ```bash
-helm repo add cnpg https://cloudnative-pg.github.io/charts
-helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/cloudnative-pg
+kubectl create namespace vault
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm upgrade --install vault hashicorp/vault --namespace vault -f vault-values.yaml
+```
+Initialize the Vault
+
+```bash
+kubectl exec -ti vault-0 -n vault -- vault operator init
+```
+Unseal the Vault using the unseal keys obtained during initialization
+```bash
+kubectl exec -ti vault-0 -n vault -- vault operator unseal
+```
+
+Once Unsealed, join the Vault to the cluster (do this for the other nodes)
+
+```bash
+kubectl -n vault exec -it vault-1 -- vault operator raft join https://vault-0.vault-internal.vault.svc.cluster.local:8200
+kubectl -n vault exec -it vault-1 -- vault operator unseal
+```
+
+Auto-unseal using AWS KMS - https://developer.hashicorp.com/vault/docs/configuration/seal/awskms#awskms-example 
+```yaml
+seal "awskms" {
+  region     = "ap-southeast-1"
+  access_key = "YOUR_ACCESS_KEY"
+  secret_key = "YOUR_SECRET_KEY"
+  kms_key_id = "YOUR_KMS_KEY_ID"
+}
 ```
