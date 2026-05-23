@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vault-ingress
+  namespace: vault
+  annotations:
+    cert-manager.io/issuer: "home-ca-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+   - hosts:
+     - vault.home.lan
+     secretName: tls-vault-cert
+  ingressClassName: traefik
+  rules:
+    - host: vault.home.lan
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vault
+                port:
+                  number: 8200

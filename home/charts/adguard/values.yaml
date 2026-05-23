@@ -85,7 +85,13 @@ readinessProbe:
   failureThreshold: 3
 
 persistence:
-  enabled: true
-  accessModes:
-    - ReadWriteOnce
-  size: 1Gi
+  work:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+  conf:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi

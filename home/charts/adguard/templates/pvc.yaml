@@ -1,15 +1,31 @@
-{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+{{- if and .Values.persistence.work.enabled (not .Values.persistence.work.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "adguard.fullname" . }}
+  name: {{ printf "%s-work" (include "adguard.fullname" .) }}
   labels:
     {{- include "adguard.labels" . | nindent 4 }}
 spec:
   accessModes:
-    {{- toYaml .Values.persistence.accessModes | nindent 4 }}
+    {{- toYaml .Values.persistence.work.accessModes | nindent 4 }}
   resources:
     requests:
-      storage: {{ .Values.persistence.size }}
+      storage: {{ .Values.persistence.work.size }}
+  storageClassName: {{ .Values.global.storageClassName }}
+{{- end }}
+---
+{{- if and .Values.persistence.conf.enabled (not .Values.persistence.conf.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-conf" (include "adguard.fullname" .) }}
+  labels:
+    {{- include "adguard.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.conf.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.conf.size }}
   storageClassName: {{ .Values.global.storageClassName }}
 {{- end }}

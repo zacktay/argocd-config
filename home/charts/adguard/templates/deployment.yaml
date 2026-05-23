@@ -47,13 +47,22 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: data
+            - name: work
               mountPath: /opt/adguardhome/work
+            - name: conf
+              mountPath: /opt/adguardhome/conf
       volumes:
-        - name: data
-          {{- if .Values.persistence.enabled }}
+        - name: work
+          {{- if .Values.persistence.work.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (include "adguard.fullname" .) }}
+            claimName: {{ .Values.persistence.work.existingClaim | default (printf "%s-work" (include "adguard.fullname" .)) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: conf
+          {{- if .Values.persistence.conf.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.conf.existingClaim | default (printf "%s-conf" (include "adguard.fullname" .)) }}
           {{- else }}
           emptyDir: {}
           {{- end }}
