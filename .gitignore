@@ -125,3 +125,5 @@ Temporary Items
 temp/
 
 home/secrets
+
+Chart.lock

@@ -10,11 +10,13 @@ dependencies:
   version: "1.0.0"
   repository: "file://./charts/uptime-kuma"
 - name: pihole
-  version: "1.0.0"
-  repository: "file://./charts/pihole"
-- name: adguard
-  version: "1.0.0"
-  repository: "file://./charts/adguard"
+  version: "2.35.0"
+  repository: "https://mojo2600.github.io/pihole-kubernetes"
+  alias: pihole-1
+- name: pihole
+  version: "2.35.0"
+  repository: "https://mojo2600.github.io/pihole-kubernetes"
+  alias: pihole-2
 - name: scrypted
   version: "1.0.0"
   repository: "file://./charts/scrypted"
