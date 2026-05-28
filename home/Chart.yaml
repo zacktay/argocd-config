@@ -23,3 +23,15 @@ dependencies:
 - name: traefik
   version: "1.0.0"
   repository: "file://./charts/traefik"
+- name: vault
+  version: "1.0.0"
+  repository: "file://./charts/vault"
+- name: longhorn
+  version: "1.0.0"
+  repository: "file://./charts/longhorn"
+- name: cert-manager
+  version: "1.0.0"
+  repository: "file://./charts/cert-manager"
+- name: metallb
+  version: "1.0.0"
+  repository: "file://./charts/metallb"
