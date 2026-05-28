@@ -101,3 +101,26 @@ seal "awskms" {
   kms_key_id = "YOUR_KMS_KEY_ID"
 }
 ```
+
+Install Vault Secret Operator
+```bash
+helm install vault-secrets-operator hashicorp/vault-secrets-operator --namespace vault-secrets-operator-system --create-namespace --version 1.4.0
+```
+
+Enable Kubernetes Auth
+```bash
+vault write auth/kubernetes/config \
+  token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+  kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443" \
+  kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+```
+
+Create Policy for Vault Operator
+```bash
+kubectl exec -it vault-0 -n vault -- /bin/sh
+vault policy write vso-reader - <<EOF
+path "secret/data/*" {
+  capabilities: [permissions_to_grant_here]
+}
+EOF
+```
