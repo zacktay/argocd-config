@@ -1,0 +1,14 @@
+# vault-auth.yaml
+# In Vault - manually create vso-app-role with kubernetes auth method, bound to default service account
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-auth
+spec:
+  vaultConnectionRef: vault-connection
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: vso-app-role
+    serviceAccount: default
+  namespace: home

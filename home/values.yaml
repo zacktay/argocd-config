@@ -52,20 +52,10 @@ pihole-1:
     size: "1Gi"
     storageClass: "longhorn"
 
-  adminPassword: "snf1230z"
-
-  # -- Use an existing secret for the admin password.
   admin:
-    # -- If set to false admin password will be disabled, adminPassword specified above and the pre-existing secret (if specified) will be ignored.
     enabled: true
-    # -- Specify an existing secret to use as admin password
-    existingSecret: ""
-    # -- Specify the key inside the secret to use
+    existingSecret: "pihole-secret"
     passwordKey: "password"
-    # -- Specify [annotations](docs/Values.md#admin.annotations) to be added to the secret
-    annotations:
-      # reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
-      # reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "external-dns"
 
   extraEnvVars:
     FTLCONF_dns_listeningMode: 'all'
@@ -161,20 +151,10 @@ pihole-2:
     size: "1Gi"
     storageClass: "longhorn"
 
-  adminPassword: "snf1230z"
-
-  # -- Use an existing secret for the admin password.
   admin:
-    # -- If set to false admin password will be disabled, adminPassword specified above and the pre-existing secret (if specified) will be ignored.
     enabled: true
-    # -- Specify an existing secret to use as admin password
-    existingSecret: ""
-    # -- Specify the key inside the secret to use
+    existingSecret: "pihole-secret"
     passwordKey: "password"
-    # -- Specify [annotations](docs/Values.md#admin.annotations) to be added to the secret
-    annotations:
-      # reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
-      # reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "external-dns"
 
   extraEnvVars:
     FTLCONF_dns_listeningMode: 'all'
