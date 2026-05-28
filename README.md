@@ -124,3 +124,17 @@ path "secret/data/*" {
 }
 EOF
 ```
+
+### Headlamp
+
+Installs Headlamp
+
+```bash
+helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
+helm install my-headlamp headlamp/headlamp --namespace kube-system
+```
+
+Create Login Token and save this somewhere
+```bash
+kubectl create token my-headlamp --namespace kube-system
+```

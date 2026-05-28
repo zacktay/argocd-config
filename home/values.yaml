@@ -2,34 +2,94 @@
 global:
   storageClassName: longhorn
 
-pihole-1:
+# Common Pi-hole configuration, not used directly by Helm but holds anchors
+pihole_common_config: &pihole-common
   enabled: true
   replicaCount: 1
   strategyType: Recreate
-
   serviceDhcp:
     enabled: false
-
-  serviceDns:
-    loadBalancerIP: 192.168.1.53
-    type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: pihole-svc
-
-  serviceWeb:
-    loadBalancerIP: 192.168.1.53
-    type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: pihole-svc
-
-  ingress:
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+  persistentVolumeClaim:
     enabled: true
-    ingressClassName: traefik
-    annotations:
-      cert-manager.io/issuer: "home-ca-issuer"
-      traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    path: /
-    pathType: ImplementationSpecific
+    accessModes:
+      - ReadWriteOnce
+    size: "1Gi"
+    storageClass: "longhorn"
+  admin:
+    enabled: true
+    existingSecret: "pihole-secret"
+    passwordKey: "password"
+  extraEnvVars:
+    FTLCONF_dns_listeningMode: 'all'
+    TZ: Asia/Singapore
+    FTLCONF_dns_hosts: |
+      192.168.2.3    homeassistant.local;
+      192.168.1.21   longhorn.local;
+      192.168.1.8    postgres.lan;
+      192.168.1.20   adguard.home.lan;
+      192.168.1.20   scrypted.home.lan;
+      192.168.1.20   uptime-kuma.home.lan;
+      192.168.1.20   vault.home.lan;
+      192.168.1.20   headlamp.home.lan;
+      192.168.1.20   traefik.home.lan;
+      192.168.1.53   pihole-1.home.lan;
+      192.168.1.54   pihole-2.home.lan;
+  DNS1: "1.1.1.1"
+  DNS2: "1.0.0.1"
+  adlists:
+    - https://reddestdream.github.io/Projects/MinimalHosts/etc/MinimalHostsBlocker/minimalhosts
+    - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+    - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.plus.txt
+    - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.medium.txt
+  whitelist:
+    - msmetrics.ws.sonos.com
+  capabilities:
+    add:
+    - CHOWN
+    - NET_BIND_SERVICE
+    - NET_RAW
+    - NET_ADMIN
+    - SYS_NICE
+    - SYS_TIME
+  podDnsConfig:
+    enabled: true
+    policy: "None"
+    nameservers:
+      - 127.0.0.1
+      - 1.1.1.1
+
+# Common service and ingress parts
+pihole_service_common: &pihole-service-common
+  type: LoadBalancer
+  annotations:
+    metallb.io/allow-shared-ip: pihole-svc
+
+pihole_ingress_common: &pihole-ingress-common
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/issuer: "home-ca-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  path: /
+  pathType: ImplementationSpecific
+
+pihole-1:
+  <<: *pihole-common
+  serviceDns:
+    <<: *pihole-service-common
+    loadBalancerIP: 192.168.1.53
+  serviceWeb:
+    <<: *pihole-service-common
+    loadBalancerIP: 192.168.1.53
+  ingress:
+    <<: *pihole-ingress-common
     hosts:
       - pihole-1.home.lan
     tls:
@@ -37,164 +97,19 @@ pihole-1:
        hosts:
          - pihole-1.home.lan
 
-  resources:
-    limits:
-      cpu: 2000m
-      memory: 2Gi
-    requests:
-      cpu: 1000m
-      memory: 1Gi
-
-  persistentVolumeClaim:
-    enabled: true
-    accessModes:
-      - ReadWriteOnce
-    size: "1Gi"
-    storageClass: "longhorn"
-
-  admin:
-    enabled: true
-    existingSecret: "pihole-secret"
-    passwordKey: "password"
-
-  extraEnvVars:
-    FTLCONF_dns_listeningMode: 'all'
-    TZ: Asia/Singapore
-    FTLCONF_dns_hosts: |
-      192.168.2.3    homeassistant.local;
-      192.168.1.21   longhorn.local;
-      192.168.1.8    postgres.lan;
-      192.168.1.20   adguard.home.lan;
-      192.168.1.20   scrypted.home.lan;
-      192.168.1.20   uptime-kuma.home.lan;
-      192.168.1.20   vault.home.lan;
-      192.168.1.20   traefik.home.lan;
-      192.168.1.53   pihole-1.home.lan;
-      192.168.1.54   pihole-2.home.lan;
-
-  DNS1: "1.1.1.1"
-  DNS2: "1.0.0.1"
-    
-  adlists:
-    - https://reddestdream.github.io/Projects/MinimalHosts/etc/MinimalHostsBlocker/minimalhosts
-    - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-    - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.plus.txt
-    - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.medium.txt
-  
-  whitelist:
-    - msmetrics.ws.sonos.com
-
-  capabilities:
-    add:
-    - CHOWN
-    - NET_BIND_SERVICE
-    - NET_RAW
-    - NET_ADMIN
-    - SYS_NICE
-    - SYS_TIME
-
-  podDnsConfig:
-    enabled: true
-    policy: "None"
-    nameservers:
-      - 127.0.0.1
-      - 1.1.1.1
-
-
 pihole-2:
-  enabled: true
-  replicaCount: 1
-  strategyType: Recreate
-
-  serviceDhcp:
-    enabled: false
-
+  <<: *pihole-common
   serviceDns:
+    <<: *pihole-service-common
     loadBalancerIP: 192.168.1.54
-    type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: pihole-svc
-
   serviceWeb:
+    <<: *pihole-service-common
     loadBalancerIP: 192.168.1.54
-    type: LoadBalancer
-    annotations:
-      metallb.universe.tf/allow-shared-ip: pihole-svc
-
   ingress:
-    enabled: true
-    ingressClassName: traefik
-    annotations:
-      cert-manager.io/issuer: "home-ca-issuer"
-      traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    path: /
-    pathType: ImplementationSpecific
+    <<: *pihole-ingress-common
     hosts:
       - pihole-2.home.lan
     tls:
      - secretName: tls-pihole-2-cert
        hosts:
          - pihole-2.home.lan
-
-  resources:
-    limits:
-      cpu: 2000m
-      memory: 2Gi
-    requests:
-      cpu: 1000m
-      memory: 1Gi
-
-  persistentVolumeClaim:
-    enabled: true
-    accessModes:
-      - ReadWriteOnce
-    size: "1Gi"
-    storageClass: "longhorn"
-
-  admin:
-    enabled: true
-    existingSecret: "pihole-secret"
-    passwordKey: "password"
-
-  extraEnvVars:
-    FTLCONF_dns_listeningMode: 'all'
-    TZ: Asia/Singapore
-    FTLCONF_dns_hosts: |
-      192.168.2.3    homeassistant.local;
-      192.168.1.21   longhorn.local;
-      192.168.1.8    postgres.lan;
-      192.168.1.20   adguard.home.lan;
-      192.168.1.20   scrypted.home.lan;
-      192.168.1.20   uptime-kuma.home.lan;
-      192.168.1.20   vault.home.lan;
-      192.168.1.20   traefik.home.lan;
-      192.168.1.53   pihole-1.home.lan;
-      192.168.1.54   pihole-2.home.lan;
-
-  DNS1: "1.1.1.1"
-  DNS2: "1.0.0.1"
-    
-  adlists:
-    - https://reddestdream.github.io/Projects/MinimalHosts/etc/MinimalHostsBlocker/minimalhosts
-    - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-    - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.plus.txt
-    - https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.medium.txt
-  
-  whitelist:
-    - msmetrics.ws.sonos.com
-
-  capabilities:
-    add:
-    - CHOWN
-    - NET_BIND_SERVICE
-    - NET_RAW
-    - NET_ADMIN
-    - SYS_NICE
-    - SYS_TIME
-
-  podDnsConfig:
-    enabled: true
-    policy: "None"
-    nameservers:
-      - 127.0.0.1
-      - 1.1.1.1

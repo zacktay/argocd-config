@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: headlamp-ingress
+  namespace: kube-system
+  annotations:
+    cert-manager.io/issuer: "home-ca-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+   - hosts:
+     - headlamp.home.lan
+     secretName: tls-headlamp-cert
+  ingressClassName: traefik
+  rules:
+    - host: headlamp.home.lan
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-headlamp
+                port:
+                  number: 80
