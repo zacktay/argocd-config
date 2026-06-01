@@ -10,8 +10,8 @@ metadata:
 spec:
   tls:
    - hosts:
-     - uptime-kuma.home.lan
-     secretName: tls-uptime-kuma-cert
+     - uptime-kuma.teegeedoubleyou.work
+     secretName: uptime-kuma-tls-secret
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}

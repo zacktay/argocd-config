@@ -36,15 +36,19 @@ ingress:
   enabled: true
   ingressClassName: traefik
   annotations:
-    cert-manager.io/cluster-issuer: "home-ca-issuer"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
   hosts:
-    - host: scrypted.home.lan
+    - host: scrypted.teegeedoubleyou.work
       paths:
         - path: /
           pathType: Prefix
           backend:
             servicePort: 11080
+  tls:
+   - secretName: scrypted-tls-secret
+     hosts:
+       - scrypted.teegeedoubleyou.work
 
 resources:
   limits:

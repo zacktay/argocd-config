@@ -1,9 +1,9 @@
 ingress:
   enabled: true
-  host: headlamp.home.lan
-  tlsSecretName: tls-headlamp-cert
+  host: headlamp.teegeedoubleyou.work
+  tlsSecretName: headlamp-tls-secret
   annotations:
-    cert-manager.io/cluster-issuer: "home-ca-issuer"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
 
 backend:

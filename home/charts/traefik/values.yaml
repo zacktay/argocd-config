@@ -9,9 +9,9 @@ service:
 
 ingress:
   annotations:
-    cert-manager.io/cluster-issuer: "home-ca-issuer"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
-  host: traefik.home.lan
-  issuer: home-ca-issuer
+  host: traefik.teegeedoubleyou.work
+  issuer: letsencrypt-cluster-issuer
   tls: true
-  tlsSecretName: tls-traefik-cert
+  tlsSecretName: traefik-tls-secret

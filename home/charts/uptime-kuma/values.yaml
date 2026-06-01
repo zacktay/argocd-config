@@ -31,10 +31,10 @@ ingress:
   enabled: true
   ingressClassName: traefik
   annotations:
-    cert-manager.io/cluster-issuer: "home-ca-issuer"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
   hosts:
-    - host: uptime-kuma.home.lan
+    - host: uptime-kuma.teegeedoubleyou.work
       paths: 
         - path: /
           pathType: Prefix

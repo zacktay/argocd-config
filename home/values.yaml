@@ -32,8 +32,6 @@ pihole_common_config: &pihole-common
     FTLCONF_dns_hosts: |
       192.168.2.3    homeassistant.local;
       192.168.1.21   longhorn.local;
-      192.168.1.8    postgres.lan;
-      192.168.1.20   adguard.home.lan;
       192.168.1.20   scrypted.home.lan;
       192.168.1.20   uptime-kuma.home.lan;
       192.168.1.20   vault.home.lan;
@@ -41,6 +39,12 @@ pihole_common_config: &pihole-common
       192.168.1.20   traefik.home.lan;
       192.168.1.53   pihole-1.home.lan;
       192.168.1.54   pihole-2.home.lan;
+      192.168.1.20   scrypted.teegeedoubleyou.work;
+      192.168.1.20   uptime-kuma.teegeedoubleyou.work;
+      192.168.1.20   vault.teegeedoubleyou.work;
+      192.168.1.20   headlamp.teegeedoubleyou.work;
+      192.168.1.20   traefik.teegeedoubleyou.work;
+
   DNS1: "1.1.1.1"
   DNS2: "1.0.0.1"
   adlists:
@@ -75,7 +79,7 @@ pihole_ingress_common: &pihole-ingress-common
   enabled: true
   ingressClassName: traefik
   annotations:
-    cert-manager.io/cluster-issuer: "home-ca-issuer"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
   path: /
   pathType: ImplementationSpecific
@@ -91,11 +95,11 @@ pihole-1:
   ingress:
     <<: *pihole-ingress-common
     hosts:
-      - pihole-1.home.lan
+      - pihole-1.teegeedoubleyou.work
     tls:
-     - secretName: tls-pihole-1-cert
+     - secretName: pihole-1-tls-secret
        hosts:
-         - pihole-1.home.lan
+         - pihole-1.teegeedoubleyou.work
 
 pihole-2:
   <<: *pihole-common
@@ -108,8 +112,8 @@ pihole-2:
   ingress:
     <<: *pihole-ingress-common
     hosts:
-      - pihole-2.home.lan
+      - pihole-2.teegeedoubleyou.work
     tls:
-     - secretName: tls-pihole-2-cert
+     - secretName: pihole-2-tls-secret
        hosts:
-         - pihole-2.home.lan
+         - pihole-2.teegeedoubleyou.work

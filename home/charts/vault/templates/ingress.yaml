@@ -4,16 +4,16 @@ metadata:
   name: vault-ingress
   namespace: vault
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-cloudflare"
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
   tls:
    - hosts:
-     - vault.yourdomain.com
+     - vault.teegeedoubleyou.work
      secretName: tls-vault-cert
   ingressClassName: traefik
   rules:
-    - host: vault.yourdomain.com
+    - host: vault.teegeedoubleyou.work
       http:
         paths:
           - path: /

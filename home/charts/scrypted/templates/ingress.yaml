@@ -8,10 +8,10 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
+  {{- if .Values.ingress.tls }}
   tls:
-   - hosts:
-     - scrypted.home.lan
-     secretName: tls-scrypted-cert
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
   {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   {{- end }}
