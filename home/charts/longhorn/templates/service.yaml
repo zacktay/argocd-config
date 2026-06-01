@@ -4,12 +4,16 @@ metadata:
   name: longhorn-frontend
   namespace: longhorn-system
   annotations:
-    metallb.universe.tf/loadBalancerIPs: 192.168.1.21
+{{- if and .Values.service.enabled (ne .Values.service.loadBalancerIP "") }}
+    metallb.universe.tf/loadBalancerIPs: {{ .Values.service.loadBalancerIP | quote }}
+{{- end }}
 spec:
   selector:
     app: longhorn-ui
   ports:
     - name: http
-      port: 80
-      targetPort: http
-  type: LoadBalancer
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+{{- if .Values.service.enabled }}
+  type: {{ .Values.service.type }}
+{{- end }}

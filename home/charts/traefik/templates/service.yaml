@@ -6,15 +6,23 @@ metadata:
   labels:
     app.kubernetes.io/instance: traefik
     app.kubernetes.io/name: traefik-dashboard
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.service.annotations }}
   annotations:
-    metallb.universe.tf/loadBalancerIPs: "192.168.1.20"
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type }}
   ports:
-  - name: traefik
-    port: 9000
-    targetPort: traefik
-    protocol: TCP
+    - name: traefik
+      port: {{ .Values.service.port }}
+      targetPort: traefik
+      protocol: TCP
   selector:
     app.kubernetes.io/instance: traefik-kube-system
     app.kubernetes.io/name: traefik
+{{- with .Values.service.additionalSpec }}
+{{- toYaml . | nindent 2 }}
+{{- end }}

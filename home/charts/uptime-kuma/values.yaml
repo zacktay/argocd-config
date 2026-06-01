@@ -31,7 +31,7 @@ ingress:
   enabled: true
   ingressClassName: traefik
   annotations:
-    cert-manager.io/issuer: "home-ca-issuer"
+    cert-manager.io/cluster-issuer: "home-ca-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
   hosts:
     - host: uptime-kuma.home.lan

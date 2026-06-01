@@ -1,0 +1,11 @@
+ingress:
+  enabled: true
+  host: headlamp.home.lan
+  tlsSecretName: tls-headlamp-cert
+  annotations:
+    cert-manager.io/cluster-issuer: "home-ca-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+backend:
+  serviceName: my-headlamp
+  servicePort: 80

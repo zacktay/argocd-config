@@ -4,16 +4,16 @@ metadata:
   name: vault-ingress
   namespace: vault
   annotations:
-    cert-manager.io/issuer: "home-ca-issuer"
+    cert-manager.io/cluster-issuer: "letsencrypt-cloudflare"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
   tls:
    - hosts:
-     - vault.home.lan
+     - vault.yourdomain.com
      secretName: tls-vault-cert
   ingressClassName: traefik
   rules:
-    - host: vault.home.lan
+    - host: vault.yourdomain.com
       http:
         paths:
           - path: /
