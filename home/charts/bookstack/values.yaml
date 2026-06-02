@@ -1,0 +1,4 @@
+app:
+  secret: bookstack-secret
+  host: bookstack.teegeedoubleyou.work
+  tlsSecret: bookstack-tls-secret

@@ -42,6 +42,7 @@ pihole_common_config: &pihole-common
       192.168.1.20   proxmox.teegeedoubleyou.work;
       192.168.1.20   wireguard.teegeedoubleyou.work;
       192.168.1.20   homepage.teegeedoubleyou.work;
+      192.168.1.20   bookstack.teegeedoubleyou.work;
 
   DNS1: "1.1.1.1"
   DNS2: "1.0.0.1"
