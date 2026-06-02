@@ -1,0 +1,64 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wireguard-ui-cert
+  namespace: home
+spec:
+  secretName: wireguard-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - wireguard.teegeedoubleyou.work
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: wireguard-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wireguard-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 10086
+    targetPort: 10086
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: wireguard-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.254
+  ports:
+  - name: http
+    port: 10086
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wireguard-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`wireguard.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: wireguard-ui-backend
+      port: 10086
+      scheme: http
+      serversTransport: wireguard-transport
+  tls:
+    secretName: wireguard-ui-tls

@@ -1,0 +1,64 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: proxmox-ui-cert
+  namespace: home
+spec:
+  secretName: proxmox-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - proxmox.teegeedoubleyou.work
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: proxmox-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxmox-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: https
+    port: 8006
+    targetPort: 8006
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: proxmox-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.10
+  ports:
+  - name: https
+    port: 8006
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxmox-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`proxmox.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: proxmox-ui-backend
+      port: 8006
+      scheme: https
+      serversTransport: proxmox-transport
+  tls:
+    secretName: proxmox-ui-tls

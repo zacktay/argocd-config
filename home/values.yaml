@@ -31,13 +31,16 @@ pihole_common_config: &pihole-common
     TZ: Asia/Singapore
     FTLCONF_dns_hosts: |
       192.168.2.3    homeassistant.local;
-      192.168.1.21   longhorn.local;
       192.168.1.20   scrypted.teegeedoubleyou.work;
       192.168.1.20   uptime-kuma.teegeedoubleyou.work;
       192.168.1.20   vault.teegeedoubleyou.work;
       192.168.1.20   headlamp.teegeedoubleyou.work;
       192.168.1.20   traefik.teegeedoubleyou.work;
       192.168.1.20   longhorn.teegeedoubleyou.work;
+      192.168.1.20   pihole-1.teegeedoubleyou.work;
+      192.168.1.20   pihole-2.teegeedoubleyou.work;
+      192.168.1.20   proxmox.teegeedoubleyou.work;
+      192.168.1.20   wireguard.teegeedoubleyou.work;
 
   DNS1: "1.1.1.1"
   DNS2: "1.0.0.1"
