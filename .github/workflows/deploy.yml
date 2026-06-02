@@ -1,0 +1,19 @@
+name: Deploy Helm Charts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy Helm Charts
+        run: |
+          if [ -d "home" ]; then
+            echo "Deploying home..."
+            helm upgrade --install "home" "./home" --namespace "home" --create-namespace
+          fi
