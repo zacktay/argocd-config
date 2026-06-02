@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: longhorn-frontend
   namespace: longhorn-system
-  annotations:
-{{- if and .Values.service.enabled (ne .Values.service.loadBalancerIP "") }}
-    metallb.universe.tf/loadBalancerIPs: {{ .Values.service.loadBalancerIP | quote }}
-{{- end }}
+  annotations: {}
 spec:
   selector:
     app: longhorn-ui

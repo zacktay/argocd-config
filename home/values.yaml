@@ -32,18 +32,12 @@ pihole_common_config: &pihole-common
     FTLCONF_dns_hosts: |
       192.168.2.3    homeassistant.local;
       192.168.1.21   longhorn.local;
-      192.168.1.20   scrypted.home.lan;
-      192.168.1.20   uptime-kuma.home.lan;
-      192.168.1.20   vault.home.lan;
-      192.168.1.20   headlamp.home.lan;
-      192.168.1.20   traefik.home.lan;
-      192.168.1.53   pihole-1.home.lan;
-      192.168.1.54   pihole-2.home.lan;
       192.168.1.20   scrypted.teegeedoubleyou.work;
       192.168.1.20   uptime-kuma.teegeedoubleyou.work;
       192.168.1.20   vault.teegeedoubleyou.work;
       192.168.1.20   headlamp.teegeedoubleyou.work;
       192.168.1.20   traefik.teegeedoubleyou.work;
+      192.168.1.20   longhorn.teegeedoubleyou.work;
 
   DNS1: "1.1.1.1"
   DNS2: "1.0.0.1"
