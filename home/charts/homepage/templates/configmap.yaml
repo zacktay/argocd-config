@@ -20,47 +20,120 @@ data:
   bookmarks.yaml: |
     - Developer:
         - Github:
-            - abbr: GH
-              href: https://github.com/zacktay
+            - icon: github.png
+              href: https://github.com/zacktay/
+              description: Github
+        - Coursera:
+            - icon: coursera.png
+              href: https://www.coursera.org/programs/b10b-jan26-12m-3ry38/
+              description: Coursera
+        - Gemini:
+            - icon: google.png
+              href: https://gemini.google.com/
+              description: Gemini
+
+    - Social:
+        - Gmail:
+            - icon: gmail.png
+              href: https://mail.google.com/
+              description: Gmail
+        - Reddit:
+            - icon: reddit.png
+              href: https://reddit.com/
+              description: Reddit
+        - AWS re:Post:
+            - icon: aws.png
+              href: https://repost.aws/
+              description: AWS re:Post
+
+    - Entertainment:
+        - Plex:
+            - icon: plex.png
+              href: http://plex.teegeedoubleyou.work/
+              description: Plex Media Server
+        - YouTube:
+            - icon: youtube.png
+              href: https://youtube.com/
+              description: YouTube
+        - Netflix:
+            - icon: netflix.png
+              href: https://netflix.com/
+              description: Netflix
+
   services.yaml: |
-    - DNS and Security:
+    - Infrastructure & Management:
+        - Proxmox:
+            icon: proxmox.png
+            href: https://proxmox.teegeedoubleyou.work
+            description: Hypervisor
+        - Longhorn:
+            icon: longhorn.png
+            href: https://longhorn.teegeedoubleyou.work
+            description: Block Storage
+        - Headlamp:
+            icon: headlamp.png
+            href: https://headlamp.teegeedoubleyou.work/c/main/
+            description: Kubernetes UI
+        - Unifi:
+            icon: unifi.png
+            href: https://unifi.teegeedoubleyou.work/
+            description: Unifi Management Console
+    - Monitoring & Routing:
+        - Traefik:
+            icon: traefik.png
+            href: https://traefik.teegeedoubleyou.work
+            description: Reverse Proxy
+        - Uptime Kuma:
+            icon: uptime-kuma.png
+            href: https://uptime-kuma.teegeedoubleyou.work
+            description: Uptime Monitoring
+    - DNS & Security:
         - Pihole-1:
+            icon: pi-hole.png
             href: https://pihole-1.teegeedoubleyou.work/admin/
-            description: Primary Pi-hole
+            description: Primary DNS
         - Pihole-2:
+            icon: pi-hole.png
             href: https://pihole-2.teegeedoubleyou.work/admin/
-            description: Secondary Pi-hole
-        - Wireguard:
-            href: https://wireguard.teegeedoubleyou.work
-            description: Wireguard
+            description: Secondary DNS
         - Vault:
+            icon: hashicorp-vault.png
             href: https://vault.teegeedoubleyou.work
-            description: Vault
+            description: Secrets Management
+        - Wireguard:
+            icon: wireguard.png
+            href: https://wireguard.teegeedoubleyou.work
+            description: VPN
     - Smart Home:
         - Home Assistant:
+            icon: home-assistant.png
             href: https://ha.teegeedoubleyou.work
-            description: Home Assistant
+            description: Home Automation
         - Scrypted:
+            icon: scrypted.png
             href: https://scrypted.teegeedoubleyou.work/endpoint/@scrypted/core/public/#/device
-            description: Scrypted
-    - Monitoring:
-        - Headlamp:
-            href: https://headlamp.teegeedoubleyou.work/c/main/
-            description: Headlamp
-        - Traefik:
-            href: https://traefik.teegeedoubleyou.work
-            description: Traefik
-        - Uptime Kuma:
-            href: https://uptime-kuma.teegeedoubleyou.work
-            description: Uptime Kuma
-        - Longhorn:
-            href: https://longhorn.teegeedoubleyou.work
-            description: Longhorn
-        - Proxmox:
-            href: https://proxmox.teegeedoubleyou.work
-            description: Proxmox
+            description: NVR
+    - Wiki & Apps:
+        - Bookstack:
+            icon: bookstack.png
+            href: https://bookstack.teegeedoubleyou.work
+            description: Documentation
+        - Synology:
+            icon: synology.png
+            href: https://synology.teegeedoubleyou.work/
+            description: File Sharing
 
   widgets.yaml: |
+    - search:
+        provider: google
+        target: _blank
+        showSearchIcon: true
+        focus: true
+    - datetime:
+        text_size: xl
+        format:
+          timeStyle: short
+          dateStyle: full
     - kubernetes:
         cluster:
           show: true
@@ -73,13 +146,4 @@ data:
           cpu: true
           memory: true
           showLabel: true
-    - resources:
-        backend: resources
-        expanded: true
-        cpu: true
-        memory: true
-        network: default
-    - search:
-        provider: google
-        target: _blank
   docker.yaml: ""

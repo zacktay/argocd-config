@@ -1,0 +1,64 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: unifi-ui-cert
+  namespace: home
+spec:
+  secretName: unifi-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - unifi.teegeedoubleyou.work
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: unifi-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: https
+    port: 443
+    targetPort: 443
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: unifi-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.1
+  ports:
+  - name: https
+    port: 443
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: unifi-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`unifi.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: unifi-ui-backend
+      port: 443
+      scheme: https
+      serversTransport: unifi-transport
+  tls:
+    secretName: unifi-ui-tls
