@@ -1,6 +1,14 @@
+global:
+  domain: ""
+  clusterIssuer: ""
+  ingressClassName: ""
+
+namespaceOverride: ""
+
 ingress:
   enabled: true
-  host: headlamp.teegeedoubleyou.work
+  host: ""
+  hostPrefix: headlamp
   tlsSecretName: headlamp-tls-secret
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"

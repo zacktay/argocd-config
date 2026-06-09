@@ -20,7 +20,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: vault
-  namespace: vault
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: vault-sa-reviewer

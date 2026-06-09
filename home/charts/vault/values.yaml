@@ -1,0 +1,12 @@
+global:
+  domain: ""
+  clusterIssuer: ""
+  ingressClassName: ""
+
+namespaceOverride: ""
+
+ingress:
+  enabled: true
+  host: ""
+  hostPrefix: vault
+  tlsSecretName: tls-vault-cert

@@ -27,19 +27,22 @@ service:
   targetPort: 3001
   annotations: {}
 
+global:
+  domain: ""
+  clusterIssuer: ""
+  ingressClassName: ""
+
+namespaceOverride: ""
+
 ingress:
   enabled: true
+  host: ""
+  hostPrefix: uptime-kuma
+  tlsSecretName: uptime-kuma-tls-secret
   ingressClassName: traefik
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
-  hosts:
-    - host: uptime-kuma.teegeedoubleyou.work
-      paths: 
-        - path: /
-          pathType: Prefix
-          backend:
-            servicePort: 80
 
 resources:
   limits:

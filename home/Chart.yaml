@@ -35,3 +35,15 @@ dependencies:
 - name: metallb
   version: "1.0.0"
   repository: "file://./charts/metallb"
+- name: headlamp
+  version: "1.0.0"
+  repository: "file://./charts/headlamp"
+- name: homepage
+  version: "1.0.0"
+  repository: "file://./charts/homepage"
+- name: bookstack
+  version: "1.0.0"
+  repository: "file://./charts/bookstack"
+- name: reverse-proxy
+  version: "1.0.0"
+  repository: "file://./charts/reverse-proxy"

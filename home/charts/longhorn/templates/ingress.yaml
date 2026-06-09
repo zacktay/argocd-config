@@ -2,20 +2,24 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: longhorn-ingress
-  namespace: longhorn-system
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   labels:
-  {{- with .Values.ingress.annotations }}
+    app.kubernetes.io/name: longhorn
   annotations:
+    {{- if .Values.global.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.global.clusterIssuer | quote }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   tls:
   - hosts:
-    - {{ .Values.ingress.host }}
+    - {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
     secretName: {{ .Values.ingress.tlsSecretName }}
-  ingressClassName: traefik
+  ingressClassName: {{ .Values.global.ingressClassName | default "traefik" }}
   rules:
-    - host: {{ .Values.ingress.host }}
+    - host: {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
       http:
         paths:
           - path: /

@@ -26,6 +26,13 @@ service:
       protocol: TCP
   annotations: {}
 
+global:
+  domain: ""
+  clusterIssuer: ""
+  ingressClassName: ""
+
+namespaceOverride: ""
+
 env:
   - name: SCRYPTED_WEBHOOK_UPDATE_AUTHORIZATION
     value: "Bearer SET_THIS_TO_SOME_RANDOM_TEXT"
@@ -34,21 +41,13 @@ env:
 
 ingress:
   enabled: true
+  host: ""
+  hostPrefix: scrypted
+  tlsSecretName: scrypted-tls-secret
   ingressClassName: traefik
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
-  hosts:
-    - host: scrypted.teegeedoubleyou.work
-      paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            servicePort: 11080
-  tls:
-   - secretName: scrypted-tls-secret
-     hosts:
-       - scrypted.teegeedoubleyou.work
 
 resources:
   limits:

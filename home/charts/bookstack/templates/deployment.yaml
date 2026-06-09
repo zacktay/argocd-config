@@ -73,7 +73,7 @@ spec:
                   name: {{ .Values.app.secret }}
                   key: app_key
             - name: APP_URL
-              value: "https://{{ .Values.app.host }}"
+              value: 'https://{{ .Values.app.host | default (printf "bookstack.%s" (required "global.domain is required" .Values.global.domain)) }}'
             - name: APP_DEBUG
               value: "false"
             - name: APP_PROXIES

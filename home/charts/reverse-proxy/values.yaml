@@ -1,0 +1,37 @@
+global:
+  domain: ""
+  clusterIssuer: ""
+
+namespaceOverride: ""
+
+proxies:
+  plex:
+    enabled: true
+    ip: 192.168.1.5
+    port: 32400
+    scheme: https
+    portName: https
+  proxmox:
+    enabled: true
+    ip: 192.168.1.10
+    port: 8006
+    scheme: https
+    portName: https
+  synology:
+    enabled: true
+    ip: 192.168.1.5
+    port: 5001
+    scheme: https
+    portName: https
+  unifi:
+    enabled: true
+    ip: 192.168.1.1
+    port: 443
+    scheme: https
+    portName: https
+  wireguard:
+    enabled: true
+    ip: 192.168.1.254
+    port: 10086
+    scheme: http
+    portName: http

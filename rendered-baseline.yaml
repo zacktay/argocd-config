@@ -1,0 +1,2325 @@
+---
+# Source: home/charts/bookstack/templates/network_policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: bookstack-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: bookstack-mysql
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: bookstack-web
+    ports:
+    - protocol: TCP
+      port: 3306
+
+---
+# Source: home/charts/homepage/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: homepage
+  namespace: home
+  labels:
+    app.kubernetes.io/name: homepage
+secrets:
+  - name: homepage
+---
+# Source: home/charts/homepage/templates/serviceaccount.yaml
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/service-account-token
+metadata:
+  name: homepage
+  namespace: home
+  labels:
+    app.kubernetes.io/name: homepage
+  annotations:
+    kubernetes.io/service-account.name: homepage
+---
+# Source: home/charts/homepage/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage
+  namespace: home
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  kubernetes.yaml: |
+    mode: cluster
+  settings.yaml: ""
+  ingress: "true"
+  traefik: "true" 
+  #settings.yaml: |
+  #  providers:
+  #    longhorn:
+  #      url: https://longhorn.my.network
+  custom.css: ""
+  custom.js: ""
+  bookmarks.yaml: |
+    - Developer:
+        - Github:
+            - icon: github.png
+              href: https://github.com/zacktay/
+              description: Github
+        - Coursera:
+            - icon: coursera.png
+              href: https://www.coursera.org/programs/b10b-jan26-12m-3ry38/
+              description: Coursera
+        - Gemini:
+            - icon: google.png
+              href: https://gemini.google.com/
+              description: Gemini
+
+    - Social:
+        - Gmail:
+            - icon: gmail.png
+              href: https://mail.google.com/
+              description: Gmail
+        - Reddit:
+            - icon: reddit.png
+              href: https://reddit.com/
+              description: Reddit
+        - AWS re:Post:
+            - icon: aws.png
+              href: https://repost.aws/
+              description: AWS re:Post
+
+    - Entertainment:
+        - Plex:
+            - icon: plex.png
+              href: http://plex.teegeedoubleyou.work/
+              description: Plex Media Server
+        - YouTube:
+            - icon: youtube.png
+              href: https://youtube.com/
+              description: YouTube
+        - Netflix:
+            - icon: netflix.png
+              href: https://netflix.com/
+              description: Netflix
+
+  services.yaml: |
+    - Infrastructure & Management:
+        - Proxmox:
+            icon: proxmox.png
+            href: https://proxmox.teegeedoubleyou.work
+            description: Hypervisor
+        - Longhorn:
+            icon: longhorn.png
+            href: https://longhorn.teegeedoubleyou.work
+            description: Block Storage
+        - Headlamp:
+            icon: headlamp.png
+            href: https://headlamp.teegeedoubleyou.work/c/main/
+            description: Kubernetes UI
+        - Unifi:
+            icon: unifi.png
+            href: https://unifi.teegeedoubleyou.work/
+            description: Unifi Management Console
+    - Monitoring & Routing:
+        - Traefik:
+            icon: traefik.png
+            href: https://traefik.teegeedoubleyou.work
+            description: Reverse Proxy
+        - Uptime Kuma:
+            icon: uptime-kuma.png
+            href: https://uptime-kuma.teegeedoubleyou.work
+            description: Uptime Monitoring
+    - DNS & Security:
+        - Pihole-1:
+            icon: pi-hole.png
+            href: https://pihole-1.teegeedoubleyou.work/admin/
+            description: Primary DNS
+        - Pihole-2:
+            icon: pi-hole.png
+            href: https://pihole-2.teegeedoubleyou.work/admin/
+            description: Secondary DNS
+        - Vault:
+            icon: hashicorp-vault.png
+            href: https://vault.teegeedoubleyou.work
+            description: Secrets Management
+        - Wireguard:
+            icon: wireguard.png
+            href: https://wireguard.teegeedoubleyou.work
+            description: VPN
+    - Smart Home:
+        - Home Assistant:
+            icon: home-assistant.png
+            href: https://ha.teegeedoubleyou.work
+            description: Home Automation
+        - Scrypted:
+            icon: scrypted.png
+            href: https://scrypted.teegeedoubleyou.work/endpoint/@scrypted/core/public/#/device
+            description: NVR
+    - Wiki & Apps:
+        - Bookstack:
+            icon: bookstack.png
+            href: https://bookstack.teegeedoubleyou.work
+            description: Documentation
+        - Synology:
+            icon: synology.png
+            href: https://synology.teegeedoubleyou.work/
+            description: File Sharing
+
+  widgets.yaml: |
+    - search:
+        provider: google
+        target: _blank
+        showSearchIcon: true
+        focus: true
+    - datetime:
+        text_size: xl
+        format:
+          timeStyle: short
+          dateStyle: full
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+  docker.yaml: ""
+---
+# Source: home/charts/pihole-1/templates/configmap-adlists.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-pihole-1-adlists
+  labels:
+    app: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+data:
+  adlists.list: |
+    https://reddestdream.github.io/Projects/MinimalHosts/etc/MinimalHostsBlocker/minimalhosts
+    https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+    https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.plus.txt
+    https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.medium.txt
+
+
+---
+# Source: home/charts/pihole-1/templates/configmap-whitelist.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-pihole-1-whitelist
+  labels:
+    app: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+data:
+  whitelist.txt: |
+    msmetrics.ws.sonos.com
+
+
+---
+# Source: home/charts/pihole-1/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-pihole-1-custom-dnsmasq
+  labels:
+    app: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+data:
+  02-custom.conf: |
+    addn-hosts=/etc/addn-hosts
+    dhcp-option=6,192.168.1.53
+  addn-hosts: |
+  05-pihole-custom-cname.conf: |
+
+---
+# Source: home/charts/pihole-2/templates/configmap-adlists.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-pihole-2-adlists
+  labels:
+    app: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+data:
+  adlists.list: |
+    https://reddestdream.github.io/Projects/MinimalHosts/etc/MinimalHostsBlocker/minimalhosts
+    https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+    https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.plus.txt
+    https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.medium.txt
+
+
+---
+# Source: home/charts/pihole-2/templates/configmap-whitelist.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-pihole-2-whitelist
+  labels:
+    app: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+data:
+  whitelist.txt: |
+    msmetrics.ws.sonos.com
+
+
+---
+# Source: home/charts/pihole-2/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-pihole-2-custom-dnsmasq
+  labels:
+    app: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+data:
+  02-custom.conf: |
+    addn-hosts=/etc/addn-hosts
+    dhcp-option=6,192.168.1.54
+  addn-hosts: |
+  05-pihole-custom-cname.conf: |
+
+---
+# Source: home/charts/bookstack/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstack-mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: longhorn
+---
+# Source: home/charts/bookstack/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstack-storage-uploads-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn
+---
+# Source: home/charts/bookstack/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstack-uploads-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: longhorn
+
+
+---
+# Source: home/charts/pihole-1/templates/volume-claim.yaml
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  labels:
+    app: pihole-1
+    chart: pihole-1-2.35.0
+    component: ""
+    heritage: Helm
+    release: release-name
+  name: release-name-pihole-1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "longhorn"
+  resources:
+    requests:
+      storage: "1Gi"
+---
+# Source: home/charts/pihole-2/templates/volume-claim.yaml
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  labels:
+    app: pihole-2
+    chart: pihole-2-2.35.0
+    component: ""
+    heritage: Helm
+    release: release-name
+  name: release-name-pihole-2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "longhorn"
+  resources:
+    requests:
+      storage: "1Gi"
+---
+# Source: home/charts/scrypted/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: release-name-scrypted
+  labels:
+    helm.sh/chart: scrypted-1.0.0
+    app.kubernetes.io/name: scrypted
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: longhorn
+
+---
+# Source: home/charts/uptime-kuma/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: release-name-uptime-kuma
+  labels:
+    helm.sh/chart: uptime-kuma-1.0.0
+    app.kubernetes.io/name: uptime-kuma
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn
+
+---
+# Source: home/charts/homepage/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+      - pods
+      - nodes
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - traefik.io
+    resources:
+      - ingressroutes
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - gateway.networking.k8s.io
+    resources:
+      - httproutes
+      - gateways
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - metrics.k8s.io
+    resources:
+      - nodes
+      - pods
+    verbs:
+      - get
+      - list
+---
+# Source: home/charts/vault/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vault-sa-reviewer
+rules:
+- apiGroups: ["authentication.k8s.io"]
+  resources: ["tokenreviews"]
+  verbs: ["create"]
+- apiGroups: ["authorization.k8s.io"]
+  resources: ["subjectaccessreviews"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["namespaces", "pods", "serviceaccounts"]
+  verbs: ["get", "list", "watch"]
+---
+# Source: home/charts/homepage/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: homepage
+subjects:
+  - kind: ServiceAccount
+    name: homepage
+    namespace: home
+
+
+---
+# Source: home/charts/vault/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-sa-reviewer-binding
+subjects:
+- kind: ServiceAccount
+  name: vault
+  namespace: vault
+roleRef:
+  kind: ClusterRole
+  name: vault-sa-reviewer
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: home/charts/bookstack/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: bookstack-mysql
+  name: bookstack-mysql
+spec:
+  selector:
+    app: bookstack-mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+---
+# Source: home/charts/bookstack/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: bookstack-web
+  name: bookstack-web
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: bookstack-web
+
+---
+# Source: home/charts/homepage/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage
+  namespace: home
+  labels:
+    app.kubernetes.io/name: homepage
+  annotations: {}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: homepage
+---
+# Source: home/charts/longhorn/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: longhorn-frontend
+  namespace: longhorn-system
+  annotations: {}
+spec:
+  selector:
+    app: longhorn-ui
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  type: ClusterIP
+---
+# Source: home/charts/pihole-1/templates/service-dns-tcp.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-pihole-1-dns-tcp
+  labels:
+    app: pihole-1
+    app.kubernetes.io/name: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    metallb.io/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.53
+  externalTrafficPolicy: Local
+  ports:
+    - port: 53
+      targetPort: dns
+      protocol: TCP
+      name: dns
+  selector:
+    app: pihole-1
+    release: release-name
+---
+# Source: home/charts/pihole-1/templates/service-dns-udp.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-pihole-1-dns-udp
+  labels:
+    app: pihole-1
+    app.kubernetes.io/name: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    metallb.io/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.53
+  externalTrafficPolicy: Local
+  ports:
+    - port: 53
+      targetPort: dns-udp
+      protocol: UDP
+      name: dns-udp
+  selector:
+    app: pihole-1
+    release: release-name
+---
+# Source: home/charts/pihole-1/templates/service-web.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-pihole-1-web
+  labels:
+    app: pihole-1
+    app.kubernetes.io/name: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    metallb.io/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.53
+  externalTrafficPolicy: Local
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: https
+      protocol: TCP
+      name: https
+  selector:
+    app: pihole-1
+    release: release-name
+---
+# Source: home/charts/pihole-2/templates/service-dns-tcp.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-pihole-2-dns-tcp
+  labels:
+    app: pihole-2
+    app.kubernetes.io/name: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    metallb.io/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.54
+  externalTrafficPolicy: Local
+  ports:
+    - port: 53
+      targetPort: dns
+      protocol: TCP
+      name: dns
+  selector:
+    app: pihole-2
+    release: release-name
+---
+# Source: home/charts/pihole-2/templates/service-dns-udp.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-pihole-2-dns-udp
+  labels:
+    app: pihole-2
+    app.kubernetes.io/name: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    metallb.io/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.54
+  externalTrafficPolicy: Local
+  ports:
+    - port: 53
+      targetPort: dns-udp
+      protocol: UDP
+      name: dns-udp
+  selector:
+    app: pihole-2
+    release: release-name
+---
+# Source: home/charts/pihole-2/templates/service-web.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-pihole-2-web
+  labels:
+    app: pihole-2
+    app.kubernetes.io/name: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    metallb.io/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.54
+  externalTrafficPolicy: Local
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: https
+      protocol: TCP
+      name: https
+  selector:
+    app: pihole-2
+    release: release-name
+---
+# Source: home/charts/reverse-proxy/templates/plex.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: https
+    port: 32400
+    targetPort: 32400
+---
+# Source: home/charts/reverse-proxy/templates/proxmox.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxmox-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: https
+    port: 8006
+    targetPort: 8006
+---
+# Source: home/charts/reverse-proxy/templates/synology.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: synology-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: https
+    port: 5001
+    targetPort: 5001
+---
+# Source: home/charts/reverse-proxy/templates/unifi.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: https
+    port: 443
+    targetPort: 443
+---
+# Source: home/charts/reverse-proxy/templates/wireguard.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wireguard-ui-backend
+  namespace: home
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 10086
+    targetPort: 10086
+---
+# Source: home/charts/scrypted/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-scrypted
+  labels:
+    helm.sh/chart: scrypted-1.0.0
+    app.kubernetes.io/name: scrypted
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 11080
+      protocol: TCP
+      targetPort : 11080
+      name: http
+    - port: 10443
+      protocol: TCP
+      targetPort : 10443
+      name: https
+  selector:
+    app.kubernetes.io/name: scrypted
+    app.kubernetes.io/instance: release-name
+
+---
+# Source: home/charts/traefik/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-dashboard
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: traefik
+    app.kubernetes.io/name: traefik-dashboard
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.20
+spec:
+  type: ClusterIP
+  ports:
+    - name: traefik
+      port: 9000
+      targetPort: traefik
+      protocol: TCP
+  selector:
+    app.kubernetes.io/instance: traefik-kube-system
+    app.kubernetes.io/name: traefik
+---
+# Source: home/charts/uptime-kuma/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-uptime-kuma
+  labels:
+    helm.sh/chart: uptime-kuma-1.0.0
+    app.kubernetes.io/name: uptime-kuma
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3001
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: uptime-kuma
+    app.kubernetes.io/instance: release-name
+
+---
+# Source: home/charts/bookstack/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bookstack-mysql
+  name: bookstack-mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstack-mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: bookstack-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:9.2
+          env:
+            - name: MYSQL_DATABASE
+              value: bookstack
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstack-secret 
+                  key: password
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstack-secret
+                  key: root_password
+            - name: MYSQL_USER
+              value: bookstack
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: bookstack-mysql-data
+          ports:
+            - containerPort: 3306
+      restartPolicy: Always
+      volumes:
+        - name: bookstack-mysql-data
+          persistentVolumeClaim:
+            claimName: bookstack-mysql-pvc
+---
+# Source: home/charts/bookstack/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bookstack-web
+  name: bookstack-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstack-web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: bookstack-web
+    spec:
+      containers:
+        - name: bookstack
+          image: solidnerd/bookstack:25.5.2
+          env:
+            - name: APP_KEY
+              valueFrom: 
+                secretKeyRef:
+                  name: bookstack-secret
+                  key: app_key
+            - name: APP_URL
+              value: "https://bookstack.teegeedoubleyou.work"
+            - name: APP_DEBUG
+              value: "false"
+            - name: APP_PROXIES
+              value: "*"
+            - name: DB_DATABASE
+              value: bookstack
+            - name: DB_HOST
+              value: bookstack-mysql:3306
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstack-secret 
+                  key: password
+            - name: DB_USERNAME
+              value: bookstack
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/www/bookstack/public/uploads
+              name: uploads
+            - mountPath: /var/www/bookstack/storage/uploads
+              name: storage-uploads
+      restartPolicy: Always
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: bookstack-uploads-pvc
+        - name: storage-uploads
+          persistentVolumeClaim:
+            claimName: bookstack-storage-uploads-pvc
+
+---
+# Source: home/charts/homepage/templates/deploment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage
+  namespace: home
+  labels:
+    app.kubernetes.io/name: homepage
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: homepage
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: homepage
+    spec:
+      serviceAccountName: homepage
+      automountServiceAccountToken: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: homepage
+          image: "ghcr.io/gethomepage/homepage:latest"
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: HOMEPAGE_ALLOWED_HOSTS
+              value: "$(MY_POD_IP):3000,localhost:3000,192.168.1.20:80,homepage.teegeedoubleyou.work"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          volumeMounts:
+            - mountPath: /app/config
+              name: config-dir
+            - mountPath: /app/config/custom.js
+              name: homepage-config
+              subPath: custom.js
+            - mountPath: /app/config/custom.css
+              name: homepage-config
+              subPath: custom.css
+            - mountPath: /app/config/bookmarks.yaml
+              name: homepage-config
+              subPath: bookmarks.yaml
+            - mountPath: /app/config/docker.yaml
+              name: homepage-config
+              subPath: docker.yaml
+            - mountPath: /app/config/kubernetes.yaml
+              name: homepage-config
+              subPath: kubernetes.yaml
+            - mountPath: /app/config/services.yaml
+              name: homepage-config
+              subPath: services.yaml
+            - mountPath: /app/config/settings.yaml
+              name: homepage-config
+              subPath: settings.yaml
+            - mountPath: /app/config/widgets.yaml
+              name: homepage-config
+              subPath: widgets.yaml
+      volumes:
+        - name: homepage-config
+          configMap:
+            name: homepage
+        - name: config-dir
+          emptyDir: {}
+---
+# Source: home/charts/pihole-1/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-pihole-1
+  labels:
+    app: pihole-1
+    app.kubernetes.io/name: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pihole-1
+      release: release-name
+  template:
+    metadata:
+      annotations:
+        checksum.config.adlists: fbf10094a46ab0eeca58f0d2c12b54a45bd65bdc7d6e87ed62a18b248c5cdf1
+        checksum.config.blacklist: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546
+        checksum.config.regex: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546
+        checksum.config.whitelist: 00e221cb1a7ecb7b475792f7439cfe11466a33e38b8c1dd42d93e7e9d7281de
+        checksum.config.dnsmasqConfig: e741dd4e6cf6c04c0e6fa1c94f907721729919a50e26aa875ac6edb9ad79331
+        checksum.config.staticDhcpConfig: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546
+      labels:
+        app: pihole-1
+        app.kubernetes.io/name: pihole-1
+        release: release-name
+    spec:
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+        - 127.0.0.1
+        - 1.1.1.1
+      hostname: 
+      hostNetwork: false
+      containers:
+        - name: pihole-1
+          env:
+          - name: 'FTLCONF_webserver_port'
+            value: "80"
+          - name: VIRTUAL_HOST
+            value: pi.hole
+          - name: FTLCONF_misc_etc_dnsmasq_d
+            value: "true"
+          - name: FTLCONF_webserver_api_password
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: pihole-secret
+          - name: "FTLCONF_dns_hosts"
+            value: "192.168.2.3    homeassistant.local;\n192.168.1.20   scrypted.teegeedoubleyou.work;\n192.168.1.20   uptime-kuma.teegeedoubleyou.work;\n192.168.1.20   vault.teegeedoubleyou.work;\n192.168.1.20   headlamp.teegeedoubleyou.work;\n192.168.1.20   traefik.teegeedoubleyou.work;\n192.168.1.20   longhorn.teegeedoubleyou.work;\n192.168.1.20   pihole-1.teegeedoubleyou.work;\n192.168.1.20   pihole-2.teegeedoubleyou.work;\n192.168.1.20   proxmox.teegeedoubleyou.work;\n192.168.1.20   wireguard.teegeedoubleyou.work;\n192.168.1.20   homepage.teegeedoubleyou.work;\n192.168.1.20   bookstack.teegeedoubleyou.work;\n192.168.1.20   plex.teegeedoubleyou.work;\n192.168.1.20   synology.teegeedoubleyou.work;\n192.168.1.20   unifi.teegeedoubleyou.work;\n"
+          - name: "FTLCONF_dns_listeningMode"
+            value: "all"
+          - name: "TZ"
+            value: "Asia/Singapore"
+          - name: 'FTLCONF_dns_upstreams'
+            value: 1.1.1.1;1.0.0.1
+          image: "pihole/pihole:2025.11.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
+            capabilities:
+              add:
+              - CHOWN
+              - NET_BIND_SERVICE
+              - NET_RAW
+              - NET_ADMIN
+              - SYS_NICE
+              - SYS_TIME
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          - containerPort: 53
+            name: dns
+            protocol: TCP
+          - containerPort: 53
+            name: dns-udp
+            protocol: UDP
+          - containerPort:  443
+            name: https
+            protocol: TCP
+          - containerPort: 67
+            name: client-udp
+            protocol: UDP
+          livenessProbe:
+            exec:
+              command: 
+                - /bin/sh
+                - -c
+                - curl --silent http://localhost/api/info/login | jq 'if (.dns | not) then halt_error(1)
+                  end'
+            initialDelaySeconds: 60
+            failureThreshold: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: 
+                - /bin/sh
+                - -c
+                - curl --silent http://localhost/api/info/login | jq 'if (.dns | not) then halt_error(1)
+                  end'
+            initialDelaySeconds: 60
+            failureThreshold: 10
+            timeoutSeconds: 5
+          volumeMounts:
+          - mountPath: /etc/pihole
+            name: config
+          - mountPath: /etc/dnsmasq.d/02-custom.conf
+            name: custom-dnsmasq
+            subPath: 02-custom.conf
+          - mountPath: /etc/addn-hosts
+            name: custom-dnsmasq
+            subPath: addn-hosts
+          - mountPath: /etc/pihole/adlists.list
+            name: adlists
+            subPath: adlists.list
+          - mountPath: /etc/pihole/whitelist.txt
+            name: whitelist
+            subPath: whitelist.txt
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+            requests:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: release-name-pihole-1
+      - configMap:
+          defaultMode: 420
+          name: release-name-pihole-1-custom-dnsmasq
+        name: custom-dnsmasq
+      - configMap:
+          defaultMode: 420
+          name: release-name-pihole-1-adlists
+        name: adlists
+      - configMap:
+          defaultMode: 420
+          name: release-name-pihole-1-whitelist
+        name: whitelist
+
+---
+# Source: home/charts/pihole-2/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-pihole-2
+  labels:
+    app: pihole-2
+    app.kubernetes.io/name: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pihole-2
+      release: release-name
+  template:
+    metadata:
+      annotations:
+        checksum.config.adlists: 47b0595b1dd98d48a24661793369457feed174603f67b3be5f9db53953f32ae
+        checksum.config.blacklist: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546
+        checksum.config.regex: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546
+        checksum.config.whitelist: 9d4a2b0e0ee85306962377d0075d8787a01f5019f3c09dda573e09bdfd372e5
+        checksum.config.dnsmasqConfig: 127d6031b75cce02cd472cada02e0646c2035dc5c864d7e25da743ab67c42ff
+        checksum.config.staticDhcpConfig: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546
+      labels:
+        app: pihole-2
+        app.kubernetes.io/name: pihole-2
+        release: release-name
+    spec:
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+        - 127.0.0.1
+        - 1.1.1.1
+      hostname: 
+      hostNetwork: false
+      containers:
+        - name: pihole-2
+          env:
+          - name: 'FTLCONF_webserver_port'
+            value: "80"
+          - name: VIRTUAL_HOST
+            value: pi.hole
+          - name: FTLCONF_misc_etc_dnsmasq_d
+            value: "true"
+          - name: FTLCONF_webserver_api_password
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: pihole-secret
+          - name: "FTLCONF_dns_hosts"
+            value: "192.168.2.3    homeassistant.local;\n192.168.1.20   scrypted.teegeedoubleyou.work;\n192.168.1.20   uptime-kuma.teegeedoubleyou.work;\n192.168.1.20   vault.teegeedoubleyou.work;\n192.168.1.20   headlamp.teegeedoubleyou.work;\n192.168.1.20   traefik.teegeedoubleyou.work;\n192.168.1.20   longhorn.teegeedoubleyou.work;\n192.168.1.20   pihole-1.teegeedoubleyou.work;\n192.168.1.20   pihole-2.teegeedoubleyou.work;\n192.168.1.20   proxmox.teegeedoubleyou.work;\n192.168.1.20   wireguard.teegeedoubleyou.work;\n192.168.1.20   homepage.teegeedoubleyou.work;\n192.168.1.20   bookstack.teegeedoubleyou.work;\n192.168.1.20   plex.teegeedoubleyou.work;\n192.168.1.20   synology.teegeedoubleyou.work;\n192.168.1.20   unifi.teegeedoubleyou.work;\n"
+          - name: "FTLCONF_dns_listeningMode"
+            value: "all"
+          - name: "TZ"
+            value: "Asia/Singapore"
+          - name: 'FTLCONF_dns_upstreams'
+            value: 1.1.1.1;1.0.0.1
+          image: "pihole/pihole:2025.11.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
+            capabilities:
+              add:
+              - CHOWN
+              - NET_BIND_SERVICE
+              - NET_RAW
+              - NET_ADMIN
+              - SYS_NICE
+              - SYS_TIME
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          - containerPort: 53
+            name: dns
+            protocol: TCP
+          - containerPort: 53
+            name: dns-udp
+            protocol: UDP
+          - containerPort:  443
+            name: https
+            protocol: TCP
+          - containerPort: 67
+            name: client-udp
+            protocol: UDP
+          livenessProbe:
+            exec:
+              command: 
+                - /bin/sh
+                - -c
+                - curl --silent http://localhost/api/info/login | jq 'if (.dns | not) then halt_error(1)
+                  end'
+            initialDelaySeconds: 60
+            failureThreshold: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: 
+                - /bin/sh
+                - -c
+                - curl --silent http://localhost/api/info/login | jq 'if (.dns | not) then halt_error(1)
+                  end'
+            initialDelaySeconds: 60
+            failureThreshold: 10
+            timeoutSeconds: 5
+          volumeMounts:
+          - mountPath: /etc/pihole
+            name: config
+          - mountPath: /etc/dnsmasq.d/02-custom.conf
+            name: custom-dnsmasq
+            subPath: 02-custom.conf
+          - mountPath: /etc/addn-hosts
+            name: custom-dnsmasq
+            subPath: addn-hosts
+          - mountPath: /etc/pihole/adlists.list
+            name: adlists
+            subPath: adlists.list
+          - mountPath: /etc/pihole/whitelist.txt
+            name: whitelist
+            subPath: whitelist.txt
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+            requests:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: release-name-pihole-2
+      - configMap:
+          defaultMode: 420
+          name: release-name-pihole-2-custom-dnsmasq
+        name: custom-dnsmasq
+      - configMap:
+          defaultMode: 420
+          name: release-name-pihole-2-adlists
+        name: adlists
+      - configMap:
+          defaultMode: 420
+          name: release-name-pihole-2-whitelist
+        name: whitelist
+
+---
+# Source: home/charts/scrypted/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-scrypted
+  labels:
+    helm.sh/chart: scrypted-1.0.0
+    app.kubernetes.io/name: scrypted
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: scrypted
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: scrypted
+        app.kubernetes.io/instance: release-name
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      securityContext:
+        {}
+      containers:
+        - name: scrypted
+          securityContext:
+            {}
+          image: "koush/scrypted:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 11080
+              protocol: TCP
+            - name: https
+              containerPort: 10443
+              protocol: TCP
+          env:
+            - name: SCRYPTED_WEBHOOK_UPDATE_AUTHORIZATION
+              value: "Bearer SET_THIS_TO_SOME_RANDOM_TEXT"
+            - name: SCRYPTED_WEBHOOK_UPDATE
+              value: "http://localhost:8080/v1/update"
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 6Gi
+            requests:
+              cpu: 2000m
+              memory: 3Gi
+          volumeMounts:
+            - mountPath: /server/volume
+              name: release-name-scrypted
+      volumes:
+        - name: release-name-scrypted
+          persistentVolumeClaim:
+            claimName: release-name-scrypted
+        - name: tmp
+          emptyDir: {}
+      nodeSelector:
+        kubernetes.io/hostname: zack-node-01
+
+---
+# Source: home/charts/uptime-kuma/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-uptime-kuma
+  labels:
+    helm.sh/chart: uptime-kuma-1.0.0
+    app.kubernetes.io/name: uptime-kuma
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: uptime-kuma
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: uptime-kuma
+        app.kubernetes.io/instance: release-name
+    spec:
+      securityContext:
+        fsGroup: 2000
+      containers:
+        - name: uptime-kuma
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          image: "louislam/uptime-kuma:2"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3001
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3001
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3001
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+            requests:
+              cpu: 700m
+              memory: 1Gi
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: release-name-uptime-kuma
+        - name: tmp
+          emptyDir: {}
+
+---
+# Source: home/charts/bookstack/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookstack-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+    - host: bookstack.teegeedoubleyou.work
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bookstack-web
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - bookstack.teegeedoubleyou.work
+      secretName: bookstack-tls-secret
+
+---
+# Source: home/charts/headlamp/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: headlamp-ingress
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: headlamp
+    app.kubernetes.io/name: headlamp
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+  - hosts:
+    - headlamp.teegeedoubleyou.work
+    secretName: headlamp-tls-secret
+  ingressClassName: traefik
+  rules:
+    - host: headlamp.teegeedoubleyou.work
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-headlamp
+                port:
+                  number: 80
+---
+# Source: home/charts/homepage/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homepage
+  namespace: home
+  labels:
+    app.kubernetes.io/name: homepage
+  annotations:
+    gethomepage.dev/description: Dynamically Detected Homepage
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Cluster Management
+    gethomepage.dev/icon: homepage.png
+    gethomepage.dev/name: Homepage
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+  - hosts:
+    - homepage.teegeedoubleyou.work
+    secretName: homepage-tls-secret
+  ingressClassName: traefik
+  rules:
+    - host: "homepage.teegeedoubleyou.work"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: homepage
+                port:
+                  number: 3000
+---
+# Source: home/charts/longhorn/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: longhorn-ingress
+  namespace: longhorn-system
+  labels:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+  - hosts:
+    - longhorn.teegeedoubleyou.work
+    secretName: longhorn-tls-secret
+  ingressClassName: traefik
+  rules:
+    - host: longhorn.teegeedoubleyou.work
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: longhorn-frontend
+                port:
+                  number: 80
+---
+# Source: home/charts/pihole-1/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: release-name-pihole-1
+  labels:
+    app: pihole-1
+    chart: pihole-1-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+      - pihole-1.teegeedoubleyou.work
+      secretName: pihole-1-tls-secret
+  rules:
+    - host: "pihole-1.teegeedoubleyou.work"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: release-name-pihole-1-web
+                port: 
+                  name: http
+
+---
+# Source: home/charts/pihole-2/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: release-name-pihole-2
+  labels:
+    app: pihole-2
+    chart: pihole-2-2.35.0
+    release: release-name
+    heritage: Helm
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+      - pihole-2.teegeedoubleyou.work
+      secretName: pihole-2-tls-secret
+  rules:
+    - host: "pihole-2.teegeedoubleyou.work"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: release-name-pihole-2-web
+                port: 
+                  name: http
+
+---
+# Source: home/charts/scrypted/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: release-name-scrypted
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+    - hosts:
+      - scrypted.teegeedoubleyou.work
+      secretName: scrypted-tls-secret
+  ingressClassName: traefik
+  rules:
+  - host: scrypted.teegeedoubleyou.work
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: release-name-scrypted
+            port:
+              number: 11080
+---
+# Source: home/charts/traefik/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-ingress
+  namespace: kube-system
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+    - hosts:
+        - traefik.teegeedoubleyou.work
+      secretName: traefik-tls-secret
+  ingressClassName: traefik
+  rules:
+    - host: traefik.teegeedoubleyou.work
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: traefik-dashboard
+                port:
+                  number: 9000
+---
+# Source: home/charts/uptime-kuma/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: release-name-uptime-kuma
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+   - hosts:
+     - uptime-kuma.teegeedoubleyou.work
+     secretName: uptime-kuma-tls-secret
+  ingressClassName: traefik
+  rules:
+  - host: uptime-kuma.teegeedoubleyou.work
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: release-name-uptime-kuma
+            port:
+              number: 80
+---
+# Source: home/charts/vault/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vault-ingress
+  namespace: vault
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  tls:
+   - hosts:
+     - vault.teegeedoubleyou.work
+     secretName: tls-vault-cert
+  ingressClassName: traefik
+  rules:
+    - host: vault.teegeedoubleyou.work
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vault
+                port:
+                  number: 8200
+---
+# Source: home/charts/cert-manager/templates/home-ca-certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: home-ca
+  namespace: cert-manager
+spec:
+  isCA: true
+  commonName: home-ca
+  secretName: root-ca-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+# Source: home/charts/cert-manager/templates/letsencrypt-certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: letsencrypt-certificate
+spec:
+  secretName: letsencrypt-certificate-secret
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  commonName: teegeedoubleyou.work
+  dnsNames:
+  - teegeedoubleyou.work
+
+---
+# Source: home/charts/reverse-proxy/templates/plex.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: plex-ui-cert
+  namespace: home
+spec:
+  secretName: plex-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - plex.teegeedoubleyou.work
+---
+# Source: home/charts/reverse-proxy/templates/proxmox.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: proxmox-ui-cert
+  namespace: home
+spec:
+  secretName: proxmox-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - proxmox.teegeedoubleyou.work
+---
+# Source: home/charts/reverse-proxy/templates/synology.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: synology-ui-cert
+  namespace: home
+spec:
+  secretName: synology-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - synology.teegeedoubleyou.work
+---
+# Source: home/charts/reverse-proxy/templates/unifi.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: unifi-ui-cert
+  namespace: home
+spec:
+  secretName: unifi-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - unifi.teegeedoubleyou.work
+---
+# Source: home/charts/reverse-proxy/templates/wireguard.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wireguard-ui-cert
+  namespace: home
+spec:
+  secretName: wireguard-ui-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - wireguard.teegeedoubleyou.work
+---
+# Source: home/charts/cert-manager/templates/home-ca-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: home-ca-issuer
+spec:
+  ca:
+    secretName: root-ca-secret
+---
+# Source: home/charts/cert-manager/templates/letsencrypt-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-cluster-issuer
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: tayguangwei@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-private-key
+    solvers:
+    - dns01:
+        cloudflare:
+          email: tayguangwei@gmail.com
+          apiTokenSecretRef:
+            name: cloudflare-secret
+            key: api_token
+
+---
+# Source: home/charts/cert-manager/templates/selfsigned-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+# Source: home/charts/reverse-proxy/templates/plex.yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: plex-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.5
+  ports:
+  - name: https
+    port: 32400
+---
+# Source: home/charts/reverse-proxy/templates/proxmox.yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: proxmox-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.10
+  ports:
+  - name: https
+    port: 8006
+---
+# Source: home/charts/reverse-proxy/templates/synology.yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: synology-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.5
+  ports:
+  - name: https
+    port: 5001
+---
+# Source: home/charts/reverse-proxy/templates/unifi.yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: unifi-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.1
+  ports:
+  - name: https
+    port: 443
+---
+# Source: home/charts/reverse-proxy/templates/wireguard.yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: wireguard-ui-backend
+  namespace: home
+subsets:
+- addresses:
+  - ip: 192.168.1.254
+  ports:
+  - name: http
+    port: 10086
+---
+# Source: home/charts/metallb/templates/ip-pool.yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: production
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.168.1.20-192.168.1.250
+  autoAssign: true
+
+
+---
+# Source: home/charts/reverse-proxy/templates/plex.yaml
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: plex-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`plex.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: plex-ui-backend
+      port: 32400
+      scheme: https
+      serversTransport: plex-transport
+  tls:
+    secretName: plex-ui-tls
+---
+# Source: home/charts/reverse-proxy/templates/proxmox.yaml
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxmox-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`proxmox.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: proxmox-ui-backend
+      port: 8006
+      scheme: https
+      serversTransport: proxmox-transport
+  tls:
+    secretName: proxmox-ui-tls
+---
+# Source: home/charts/reverse-proxy/templates/synology.yaml
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: synology-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`synology.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: synology-ui-backend
+      port: 5001
+      scheme: https
+      serversTransport: synology-transport
+  tls:
+    secretName: synology-ui-tls
+---
+# Source: home/charts/reverse-proxy/templates/unifi.yaml
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: unifi-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`unifi.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: unifi-ui-backend
+      port: 443
+      scheme: https
+      serversTransport: unifi-transport
+  tls:
+    secretName: unifi-ui-tls
+---
+# Source: home/charts/reverse-proxy/templates/wireguard.yaml
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wireguard-ui-ingressroute
+  namespace: home
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`wireguard.teegeedoubleyou.work`)
+    kind: Rule
+    services:
+    - name: wireguard-ui-backend
+      port: 10086
+      scheme: http
+      serversTransport: wireguard-transport
+  tls:
+    secretName: wireguard-ui-tls
+---
+# Source: home/charts/metallb/templates/l2-advert.yaml
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: production
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - production
+---
+# Source: home/charts/reverse-proxy/templates/plex.yaml
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: plex-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+# Source: home/charts/reverse-proxy/templates/proxmox.yaml
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: proxmox-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+# Source: home/charts/reverse-proxy/templates/synology.yaml
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: synology-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+# Source: home/charts/reverse-proxy/templates/unifi.yaml
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: unifi-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+# Source: home/charts/reverse-proxy/templates/wireguard.yaml
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: wireguard-transport
+  namespace: home
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+# Source: home/charts/vault/templates/vaultauth.yaml
+# vault-auth.yaml
+# In Vault - manually create vso-app-role with kubernetes auth method, bound to default service account
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-auth
+spec:
+  vaultConnectionRef: vault-connection
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: vso-app-role
+    serviceAccount: default
+  namespace: home
+---
+# Source: home/charts/vault/templates/vaultauth.yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-auth
+  namespace: cert-manager
+spec:
+  vaultConnectionRef: vault-connection
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: vso-app-role
+    serviceAccount: default
+---
+# Source: home/charts/vault/templates/vaultconnection.yaml
+# vault-connection.yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: vault-connection
+  namespace: home
+spec:
+  address: http://vault.vault.svc.cluster.local:8200
+  skipTLSVerify: false
+---
+# Source: home/charts/vault/templates/vaultconnection.yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: vault-connection
+  namespace: cert-manager
+spec:
+  address: http://vault.vault.svc.cluster.local:8200
+  skipTLSVerify: false
+
+---
+# Source: home/charts/vault/templates/vaultstaticsecret.yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: pihole-password
+  namespace: home
+spec:
+  vaultAuthRef: vault-auth
+  mount: secret
+  type: kv-v2
+  path: pihole
+  refreshAfter: 1h
+  destination:
+    create: true
+    name: pihole-secret
+---
+# Source: home/charts/vault/templates/vaultstaticsecret.yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: cloudflare-token
+  namespace: cert-manager
+spec:
+  vaultAuthRef: vault-auth
+  mount: secret
+  type: kv-v2
+  path: cloudflare
+  refreshAfter: 1h
+  destination:
+    create: true
+    name: cloudflare-secret
+---
+# Source: home/charts/vault/templates/vaultstaticsecret.yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: bookstack-password
+  namespace: home
+spec:
+  vaultAuthRef: vault-auth
+  mount: secret
+  type: kv-v2
+  path: bookstack
+  refreshAfter: 1h
+  destination:
+    create: true
+    name: bookstack-secret
+---
+# Source: home/charts/pihole-1/templates/tests/test-pihole-endpoint.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "release-name-smoke-test"
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+  - name: hook1-container
+    image: curlimages/curl
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'curl http://release-name-pihole-1-web:80/']
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 0
+
+---
+# Source: home/charts/pihole-2/templates/tests/test-pihole-endpoint.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "release-name-smoke-test"
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+  - name: hook1-container
+    image: curlimages/curl
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'curl http://release-name-pihole-2-web:80/']
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 0
+

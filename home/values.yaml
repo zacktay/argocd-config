@@ -1,5 +1,9 @@
 # Global values that can be accessed by all subcharts
 global:
+  domain: teegeedoubleyou.work
+  ingressIP: 192.168.1.20
+  clusterIssuer: letsencrypt-cluster-issuer
+  ingressClassName: traefik
   storageClassName: longhorn
 
 # Common Pi-hole configuration, not used directly by Helm but holds anchors
@@ -29,6 +33,8 @@ pihole_common_config: &pihole-common
   extraEnvVars:
     FTLCONF_dns_listeningMode: 'all'
     TZ: Asia/Singapore
+    # NOTE: FTLCONF_dns_hosts contains default static DNS mappings for the home cluster.
+    # Override this in your custom environment values file as needed.
     FTLCONF_dns_hosts: |
       192.168.2.3    homeassistant.local;
       192.168.1.20   scrypted.teegeedoubleyou.work;
@@ -96,6 +102,8 @@ pihole-1:
     loadBalancerIP: 192.168.1.53
   ingress:
     <<: *pihole-ingress-common
+    # NOTE: Ingress hosts for remote pihole subchart are static environment defaults.
+    # Override in your deployment configuration if deploying to a different domain.
     hosts:
       - pihole-1.teegeedoubleyou.work
     tls:
@@ -113,6 +121,8 @@ pihole-2:
     loadBalancerIP: 192.168.1.54
   ingress:
     <<: *pihole-ingress-common
+    # NOTE: Ingress hosts for remote pihole subchart are static environment defaults.
+    # Override in your deployment configuration if deploying to a different domain.
     hosts:
       - pihole-2.teegeedoubleyou.work
     tls:

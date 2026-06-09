@@ -1,0 +1,32 @@
+{{- range $name, $config := .Values.proxies }}
+{{- if $config.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $name }}-ui-ingressroute
+  namespace: {{ $.Values.namespaceOverride | default $.Release.Namespace }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`{{ $name }}.{{ required "global.domain is required" $.Values.global.domain }}`)
+    kind: Rule
+    services:
+    - name: {{ $name }}-ui-backend
+      port: {{ $config.port }}
+      scheme: {{ $config.scheme }}
+      serversTransport: {{ $name }}-transport
+  tls:
+    secretName: {{ $name }}-ui-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: {{ $name }}-transport
+  namespace: {{ $.Values.namespaceOverride | default $.Release.Namespace }}
+spec:
+  insecureSkipVerify: true
+  disableHTTP2: true
+---
+{{- end }}
+{{- end }}

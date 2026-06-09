@@ -2,17 +2,20 @@ apiVersion: v1
 kind: Service
 metadata:
   name: traefik-dashboard
-  namespace: kube-system
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   labels:
     app.kubernetes.io/instance: traefik
     app.kubernetes.io/name: traefik-dashboard
     {{- with .Values.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.service.annotations }}
   annotations:
+    {{- if .Values.global.ingressIP }}
+    metallb.universe.tf/loadBalancerIPs: {{ .Values.global.ingressIP | quote }}
+    {{- end }}
+    {{- with .Values.service.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:

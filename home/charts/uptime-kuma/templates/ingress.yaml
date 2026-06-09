@@ -3,31 +3,29 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "uptime-kuma.fullname" . }}
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   annotations:
+    {{- if .Values.global.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.global.clusterIssuer | quote }}
+    {{- end }}
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
   tls:
-   - hosts:
-     - uptime-kuma.teegeedoubleyou.work
-     secretName: uptime-kuma-tls-secret
-  {{- if .Values.ingress.ingressClassName }}
-  ingressClassName: {{ .Values.ingress.ingressClassName }}
-  {{- end }}
+  - hosts:
+    - {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
+    secretName: {{ .Values.ingress.tlsSecretName | default (printf "%s-tls" (include "uptime-kuma.fullname" .)) }}
+  ingressClassName: {{ .Values.global.ingressClassName | default .Values.ingress.ingressClassName | default "traefik" }}
   rules:
-  {{- range .Values.ingress.hosts }}
-  - host: {{ .host }}
-    http:
-      paths:
-      {{- range .paths }}
-      - path: {{ .path }}
-        pathType: {{ .pathType }}
-        backend:
-          service:
-            name: {{ include "uptime-kuma.fullname" $ }}
-            port:
-              number: {{ .backend.servicePort }}
-      {{- end }}
-  {{- end }}
-{{- end -}}
+    - host: {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "uptime-kuma.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}

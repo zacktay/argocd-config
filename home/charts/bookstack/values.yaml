@@ -1,4 +1,9 @@
+global:
+  domain: ""
+
+namespaceOverride: ""
+
 app:
   secret: bookstack-secret
-  host: bookstack.teegeedoubleyou.work
+  host: ""
   tlsSecret: bookstack-tls-secret

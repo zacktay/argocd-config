@@ -1,0 +1,13 @@
+# Patterns to ignore when building packages.
+# This supports shell glob matching, relative path matching, and
+# negation (prefixed with !). Only one pattern per line.
+.git
+*~
+*.swp
+.DS_Store
+.idea/
+.vscode/
+*.tmp
+rendered-baseline.yaml
+rendered-final.yaml
+custom-rendered.yaml

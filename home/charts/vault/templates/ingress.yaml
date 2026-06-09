@@ -2,18 +2,22 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: vault-ingress
-  namespace: vault
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    {{- if .Values.global.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.global.clusterIssuer | quote }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   tls:
    - hosts:
-     - vault.teegeedoubleyou.work
-     secretName: tls-vault-cert
-  ingressClassName: traefik
+     - {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
+     secretName: {{ .Values.ingress.tlsSecretName }}
+  ingressClassName: {{ .Values.global.ingressClassName | default "traefik" }}
   rules:
-    - host: vault.teegeedoubleyou.work
+    - host: {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
       http:
         paths:
           - path: /

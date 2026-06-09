@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: homepage
-  namespace: home
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   labels:
     app.kubernetes.io/name: homepage
   annotations:
@@ -11,16 +11,20 @@ metadata:
     gethomepage.dev/group: Cluster Management
     gethomepage.dev/icon: homepage.png
     gethomepage.dev/name: Homepage
-    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    {{- if .Values.global.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.global.clusterIssuer | quote }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   tls:
   - hosts:
-    - homepage.teegeedoubleyou.work
-    secretName: homepage-tls-secret
-  ingressClassName: traefik
+    - {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
+    secretName: {{ .Values.ingress.tlsSecretName | default "homepage-tls-secret" }}
+  ingressClassName: {{ .Values.global.ingressClassName | default .Values.ingress.ingressClassName | default "traefik" }}
   rules:
-    - host: "homepage.teegeedoubleyou.work"
+    - host: {{ .Values.ingress.host | default (printf "%s.%s" .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain)) }}
       http:
         paths:
           - path: "/"

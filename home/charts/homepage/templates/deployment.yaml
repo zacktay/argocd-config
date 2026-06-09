@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: homepage
-  namespace: home
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   labels:
     app.kubernetes.io/name: homepage
 spec:
@@ -44,7 +44,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "$(MY_POD_IP):3000,localhost:3000,192.168.1.20:80,homepage.teegeedoubleyou.work"
+              value: '{{ printf "$(MY_POD_IP):3000,localhost:3000,%s:80,%s.%s" .Values.global.ingressIP .Values.ingress.hostPrefix (required "global.domain is required" .Values.global.domain) }}'
           ports:
             - name: http
               containerPort: 3000
