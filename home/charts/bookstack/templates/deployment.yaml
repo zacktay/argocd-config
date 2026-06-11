@@ -2,53 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: bookstack-mysql
-  name: bookstack-mysql-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: bookstack-mysql
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: bookstack-mysql
-    spec:
-      containers:
-        - name: mysql
-          image: mysql:9.2
-          env:
-            - name: MYSQL_DATABASE
-              value: bookstack
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.app.secret }} 
-                  key: password
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.app.secret }}
-                  key: root_password
-            - name: MYSQL_USER
-              value: bookstack
-          volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: bookstack-mysql-data
-          ports:
-            - containerPort: 3306
-      restartPolicy: Always
-      volumes:
-        - name: bookstack-mysql-data
-          persistentVolumeClaim:
-            claimName: bookstack-mysql-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
     app: bookstack-web
   name: bookstack-web
 spec:
@@ -81,7 +34,7 @@ spec:
             - name: DB_DATABASE
               value: bookstack
             - name: DB_HOST
-              value: bookstack-mysql:3306
+              value: bookstack-mysql
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
