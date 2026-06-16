@@ -104,6 +104,10 @@ data:
             icon: wireguard.png
             href: https://wireguard.teegeedoubleyou.work
             description: VPN
+        - Authentik:
+            icon: authentik.png
+            href: https://authentik.teegeedoubleyou.work
+            description: Identity Provider
     - Smart Home:
         - Home Assistant:
             icon: home-assistant.png
@@ -116,7 +120,7 @@ data:
     - Wiki & Apps:
         - Bookstack:
             icon: bookstack.png
-            href: https://bookstack.teegeedoubleyou.work
+            href: https://bookstack.teegeedoubleyou.work/shelves
             description: Documentation
         - Synology:
             icon: synology.png
