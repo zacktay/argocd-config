@@ -42,6 +42,37 @@ spec:
                   key: password
             - name: DB_USERNAME
               value: bookstack
+            - name: AUTH_METHOD
+              value: "oidc"
+            - name: AUTH_AUTO_INITIATE
+              value: "true"
+            - name: OIDC_NAME
+              value: "SSO"
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.app.secret }} 
+                  key: client_id
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.app.secret }} 
+                  key: client_secret
+            - name: OIDC_ISSUER
+              value: "https://authentik.teegeedoubleyou.work/application/o/bookstack/"
+            - name: OIDC_END_SESSION_ENDPOINT
+              value: "true"
+            - name: OIDC_ISSUER_DISCOVER
+              value: "true"
+            - name: OIDC_USER_TO_GROUPS
+              value: "true"
+            - name: OIDC_GROUPS_CLAIM
+              value: "groups"
+            - name: OIDC_REMOVE_FROM_GROUPS
+              value: "true"
+            - name: OIDC_ADDITIONAL_SCOPES
+              value: "groups"
+
           ports:
             - containerPort: 8080
               protocol: TCP
