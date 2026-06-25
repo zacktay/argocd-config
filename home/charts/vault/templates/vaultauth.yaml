@@ -25,3 +25,16 @@ spec:
   kubernetes:
     role: vso-app-role
     serviceAccount: default
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-auth
+  namespace: kube-system
+spec:
+  vaultConnectionRef: vault-connection
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: vso-app-role
+    serviceAccount: default

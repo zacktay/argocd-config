@@ -35,3 +35,6 @@ dependencies:
 - name: metallb
   version: "1.0.0"
   repository: "file://./charts/metallb"
+- name: headlamp
+  version: "0.43.0"
+  repository: "https://kubernetes-sigs.github.io/headlamp/"

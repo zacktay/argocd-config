@@ -16,3 +16,12 @@ metadata:
 spec:
   address: http://vault.vault.svc.cluster.local:8200
   skipTLSVerify: false
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: vault-connection
+  namespace: kube-system
+spec:
+  address: http://vault.vault.svc.cluster.local:8200
+  skipTLSVerify: false

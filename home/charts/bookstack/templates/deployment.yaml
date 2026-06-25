@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: bookstack
-          image: solidnerd/bookstack:25.5.2
+          image: solidnerd/bookstack:26.5.1
           env:
             - name: APP_KEY
               valueFrom: 

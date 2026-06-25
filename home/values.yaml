@@ -119,3 +119,62 @@ pihole-2:
      - secretName: pihole-2-tls-secret
        hosts:
          - pihole-2.teegeedoubleyou.work
+
+headlamp:
+  namespaceOverride: "kube-system"
+  config:
+    # -- UNSAFE: authenticate every Headlamp user as the pod's service account when running in-cluster.
+    # This disables per-user authentication and is only safe behind an auth proxy (e.g. OIDC proxy).
+    unsafeUseServiceAccountToken: true
+    # -- path to the service account token file.
+    # Only used when unsafeUseServiceAccountToken is true.
+    # Defaults to /var/run/secrets/kubernetes.io/serviceaccount/token when empty.
+    serviceAccountTokenPath: ""
+
+    externalSecret:
+      enabled: true
+      name: "headlamp-secret"
+      hasScopes: true
+
+  # env:
+  #   - name: OIDC_CLIENT_ID
+  #     valueFrom:
+  #       secretKeyRef:
+  #         name: headlamp-secret
+  #         key: clientID
+  #   - name: OIDC_CLIENT_SECRET
+  #     valueFrom:
+  #       secretKeyRef:
+  #         name: headlamp-secret
+  #         key: clientSecret
+  #   - name: OIDC_ISSUER_URL
+  #     valueFrom:
+  #       secretKeyRef:
+  #         name: headlamp-secret
+  #         key: issuerURL
+  #   - name: OIDC_SCOPES
+  #     valueFrom:
+  #       secretKeyRef:
+  #         name: headlamp-secret
+  #         key: scopes
+          
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    ingressClassName: traefik
+    hosts:
+      - host: headlamp.teegeedoubleyou.work
+        paths:
+        - path: /
+          type: Prefix
+          backend:
+            service:
+              name: home-headlamp
+              port:
+                number: 80
+    tls:
+     - secretName: headlamp-tls-secret
+       hosts:
+         - headlamp.teegeedoubleyou.work
