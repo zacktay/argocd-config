@@ -6,9 +6,37 @@ version: 0.1.1
 appVersion: "1.0.0"
 
 dependencies:
+- name: bookstack
+  version: "1.0.0"
+  repository: "file://./charts/bookstack"
+- name: cert-manager
+  version: "1.0.0"
+  repository: "file://./charts/cert-manager"
+- name: homepage
+  version: "1.0.0"
+  repository: "file://./charts/homepage"
+- name: longhorn
+  version: "1.0.0"
+  repository: "file://./charts/longhorn"
+- name: metallb
+  version: "1.0.0"
+  repository: "file://./charts/metallb"
+- name: reverse-proxy
+  version: "1.0.0"
+  repository: "file://./charts/reverse-proxy"
+- name: scrypted
+  version: "1.0.0"
+  repository: "file://./charts/scrypted"
+- name: traefik
+  version: "1.0.0"
+  repository: "file://./charts/traefik"
 - name: uptime-kuma
   version: "1.0.0"
   repository: "file://./charts/uptime-kuma"
+- name: vault
+  version: "1.0.0"
+  repository: "file://./charts/vault"
+
 - name: pihole
   version: "2.35.0"
   repository: "https://mojo2600.github.io/pihole-kubernetes"
@@ -17,24 +45,6 @@ dependencies:
   version: "2.35.0"
   repository: "https://mojo2600.github.io/pihole-kubernetes"
   alias: pihole-2
-- name: scrypted
-  version: "1.0.0"
-  repository: "file://./charts/scrypted"
-- name: traefik
-  version: "1.0.0"
-  repository: "file://./charts/traefik"
-- name: vault
-  version: "1.0.0"
-  repository: "file://./charts/vault"
-- name: longhorn
-  version: "1.0.0"
-  repository: "file://./charts/longhorn"
-- name: cert-manager
-  version: "1.0.0"
-  repository: "file://./charts/cert-manager"
-- name: metallb
-  version: "1.0.0"
-  repository: "file://./charts/metallb"
 - name: headlamp
   version: "0.43.0"
   repository: "https://kubernetes-sigs.github.io/headlamp/"
