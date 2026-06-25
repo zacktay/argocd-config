@@ -32,17 +32,22 @@ spec:
     port: 443
     targetPort: 443
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: unifi-ui-backend
   namespace: home
-subsets:
-- addresses:
-  - ip: 192.168.1.1
-  ports:
-  - name: https
+  labels:
+    app: unifi-ui
+    kubernetes.io/service-name: unifi-ui-backend
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.1.1
+ports:
+  - name: "https"
     port: 443
+    protocol: TCP
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute

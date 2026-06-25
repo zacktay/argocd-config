@@ -32,17 +32,22 @@ spec:
     port: 10086
     targetPort: 10086
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: wireguard-ui-backend
   namespace: home
-subsets:
-- addresses:
-  - ip: 192.168.1.254
-  ports:
+  labels:
+    app: wireguard-ui
+    kubernetes.io/service-name: wireguard-ui-backend
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.1.254
+ports:
   - name: http
     port: 10086
+    protocol: TCP
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute

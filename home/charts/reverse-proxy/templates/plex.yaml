@@ -32,17 +32,22 @@ spec:
     port: 32400
     targetPort: 32400
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: plex-ui-backend
   namespace: home
-subsets:
-- addresses:
-  - ip: 192.168.1.5
-  ports:
-  - name: https
+  labels:
+    app: plex-ui
+    kubernetes.io/service-name: plex-ui-backend
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.1.5
+ports:
+  - name: "https"
     port: 32400
+    protocol: TCP
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
