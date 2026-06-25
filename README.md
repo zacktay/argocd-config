@@ -17,30 +17,39 @@ The cluster is built upon a set of core components that provide essential servic
 
 ## Repository Structure
 
-The repository is organized to be used with ArgoCD, with applications defined as Helm charts.
+The repository is organized as an umbrella Helm chart (`home`) to manage all application configurations.
 
-- **`charts/`**: Contains custom Helm charts for applications deployed in the cluster. Each subdirectory is a self-contained chart.
-  - `pihole/`: Manages the Pi-hole instance.
-  - `adguard/`: Manages the AdGuard instance.
-  - `uptime-kuma/`: Manages the Uptime Kuma monitoring instance.
-  - `metallb-config/`: Manages the MetalLB `IPAddressPool` and `L2Advertisement` Custom Resources.
-  - `cert-manager/`: Manages the `Issuer` and `ClusterIssuer` for cert-manager to determine where and how it will request certificates.
-  - `scrypted/`: Manages Scrypted, a video integration platform for security cameras.
-  - `vault/`: Manages the Ingress for Hashicorp Vault
+- **`home/`**: The core directory containing the umbrella Helm chart.
+  - **`Chart.yaml`**: Defines metadata and dependencies (both local sub-charts and upstream external charts).
+  - **`values.yaml`**: Contains global and chart-specific configurations for the entire deployment stack.
+  - **`charts/`**: Custom local sub-charts and vendored upstream charts.
+    - `bookstack/`: Manages the BookStack instance.
+    - `cert-manager/`: Manages cluster issuers (`letsencrypt-cluster-issuer`, custom home-ca, selfsigned) and certificates.
+    - `homepage/`: Manages the custom dashboard (Homepage).
+    - `longhorn/`: Configures access to the Longhorn storage dashboard.
+    - `metallb/`: Defines MetalLB `IPAddressPool` and `L2Advertisement` custom resources.
+    - `reverse-proxy/`: Manages Ingress resources for external/non-cluster services (e.g., Plex, Proxmox, Synology, UniFi, WireGuard).
+    - `scrypted/`: Manages the Scrypted video integration platform.
+    - `traefik/`: Configures Traefik entrypoints and routing configurations.
+    - `uptime-kuma/`: Manages the Uptime Kuma monitoring tool.
+    - `vault/`: Configures Vault Secrets Operator integrations (`VaultConnection`, `VaultAuth`, `VaultStaticSecret`) and Ingress.
 
 ---
 
 ## Managed Applications
 
-The following applications are managed via Helm charts within this repository and deployed by ArgoCD:
+The following applications are managed via Helm charts in this repository and deployed to the home cluster:
 
-- **Pi-hole**: Primary Network-wide ad-blocking and DNS.
-- **AdGuard**: Secondary Network-wide ad-blocking and DNS. (to be switched to Primary in the future after testing DoH)
-- **Uptime Kuma**: A user-friendly monitoring tool.
-- **MetalLB Configuration**: Defines the IP address pools for `LoadBalancer` services.
-- **Cert-Manager**: Defines the `Issuer` and `ClusterIssuer` for the certificates to be used within the cluster
-- **Scrypted**: A video integration platform to connect my security cameras to HomeKit / HomeAssistant
-- **Vault**: Defines the `Ingress` for Hashicorp Vault
+- **Pi-hole (Dual Instance)**: Network-wide ad-blocking and DNS via primary (`pihole-1`) and secondary (`pihole-2`) instances.
+- **BookStack**: Wiki and documentation platform.
+- **Homepage**: Customizable application portal and dashboard.
+- **Headlamp**: Kubernetes Web UI for cluster management.
+- **Uptime Kuma**: Monitoring and status check page.
+- **MetalLB**: Defines IP address pools for `LoadBalancer` services.
+- **Cert-Manager**: Issues TLS certificates using Let's Encrypt or custom CA.
+- **Scrypted**: Connects smart security cameras to HomeKit/Home Assistant.
+- **Traefik & Reverse Proxy**: Ingress controllers and secure routing for cluster apps and external servers (Plex, Proxmox, Synology NAS, UniFi, WireGuard).
+- **Vault Secrets Operator**: Automatically synchronizes secrets from HashiCorp Vault.
 
 ---
 
@@ -123,18 +132,4 @@ path "secret/data/*" {
   capabilities: [permissions_to_grant_here]
 }
 EOF
-```
-
-### Headlamp
-
-Installs Headlamp
-
-```bash
-helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
-helm install my-headlamp headlamp/headlamp --namespace kube-system
-```
-
-Create Login Token and save this somewhere
-```bash
-kubectl create token my-headlamp --namespace kube-system
 ```
