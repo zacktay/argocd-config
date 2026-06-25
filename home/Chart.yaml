@@ -38,11 +38,11 @@ dependencies:
   repository: "file://./charts/vault"
 
 - name: pihole
-  version: "2.35.0"
+  version: "2.36.0"
   repository: "https://mojo2600.github.io/pihole-kubernetes"
   alias: pihole-1
 - name: pihole
-  version: "2.35.0"
+  version: "2.36.0"
   repository: "https://mojo2600.github.io/pihole-kubernetes"
   alias: pihole-2
 - name: headlamp
