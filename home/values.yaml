@@ -46,6 +46,7 @@ pihole_common_config: &pihole-common
       192.168.1.20   plex.teegeedoubleyou.work;
       192.168.1.20   synology.teegeedoubleyou.work;
       192.168.1.20   unifi.teegeedoubleyou.work;
+      192.168.1.20   argocd.teegeedoubleyou.work;
       
   DNS1: "1.1.1.1"
   DNS2: "1.0.0.1"

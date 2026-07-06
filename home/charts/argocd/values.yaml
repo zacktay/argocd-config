@@ -1,0 +1,17 @@
+ingress:
+  enabled: true
+  host: argocd.teegeedoubleyou.work
+  tlsSecretName: argocd-tls-secret
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+backend:
+  serviceName: argocd-server
+  servicePort: 80
+
+service:
+  enabled: true
+  port: 80
+  targetPort: http
+  type: ClusterIP
